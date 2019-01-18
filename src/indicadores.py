@@ -37,7 +37,7 @@ cantidad_datasets_cat = Counter([ normalizeColumnName("datasets_categoria_" + th
 # cantidad_recursos = len(data_json["dataset"]) # falta sumar distribuciones
 
 
-indicadores = pd.read_csv(os.path.abspath("src/indicadores.csv"))
+indicadores = pd.read_csv(os.path.abspath("indicadores.csv"))
 
 for org in cantidad_datasets_org:
   if org not in indicadores.columns:
@@ -56,4 +56,4 @@ nuevos_valores.update(cantidad_datasets_cat)
 
 indicadores = indicadores.append(nuevos_valores, ignore_index=True)
 
-indicadores.to_csv(os.path.abspath("src/indicadores.csv"), index=False)
+indicadores.to_csv(os.path.abspath("indicadores.csv"), index=False)
