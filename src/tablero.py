@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objs as go
 
-indicadores = pd.read_csv("src/indicadores.csv")
+indicadores = pd.read_csv("{}indicadores.csv".format(os.environ["SOURCE_PATH"]))
 indicadores['fecha'] = pd.to_datetime(indicadores['fecha'], format='%d/%m/%Y:%H:%M:%S', utc=True)
 
 cantidad_datasets_org = [column for column in indicadores.columns if column.startswith('datasets_organizacion_')]
