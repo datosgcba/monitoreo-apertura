@@ -58,6 +58,9 @@ app.index_string = '''
 </html>
 '''
 
+datasets_organizacion_cols = [column for column in indicadores.columns if column.startswith('datasets_organizacion_')]
+datasets_categoria_cols = [column for column in indicadores.columns if column.startswith('datasets_categoria_')]
+
 app.layout = html.Div(children=[
   html.H2("Cantidad de Datasets: {}".format(indicadores.tail(1).iloc[0].at['cantidad_datasets']), className='text-center'),
   dcc.Graph(
@@ -69,7 +72,7 @@ app.layout = html.Div(children=[
           y=indicadores[column],
           name=column.replace('datasets_organizacion_', '').replace('_', ' '),
           mode='lines'
-        ) for column in [column for column in indicadores.columns if column.startswith('datasets_organizacion_')]
+        ) for column in datasets_organizacion_cols
       ],
       'layout': {
         'title': 'Cantidad de datasets por organización'
@@ -81,10 +84,9 @@ app.layout = html.Div(children=[
     figure={
       'data': [
         go.Bar(
-          x=indicadores['fecha'].tail(1),
-          y=indicadores[column].tail(1),
-          name=column.replace('datasets_organizacion_', '').replace('_', ' '),
-        ) for column in [column for column in indicadores.columns if column.startswith('datasets_organizacion_')]
+          x=[x.replace('datasets_organizacion_', '').replace('_', ' ') for x in datasets_organizacion_cols],
+          y=indicadores[datasets_organizacion_cols].tail(1).iloc[0],
+        )
       ],
     }
   ),
@@ -97,7 +99,7 @@ app.layout = html.Div(children=[
           y=indicadores[column],
           name=column.replace('datasets_categoria_', '').replace('_', ' '),
           mode='lines'
-        ) for column in [column for column in indicadores.columns if column.startswith('datasets_categoria_')]
+        ) for column in datasets_categoria_cols
       ],
       'layout': {
         'title': 'Cantidad de datasets por categoría'
@@ -109,10 +111,9 @@ app.layout = html.Div(children=[
     figure={
       'data': [
         go.Bar(
-          x=indicadores['fecha'].tail(1),
-          y=indicadores[column].tail(1),
-          name=column.replace('datasets_categoria_', '').replace('_', ' '),
-        ) for column in [column for column in indicadores.columns if column.startswith('datasets_categoria_')]
+          x=[x.replace('datasets_categoria_', '').replace('_', ' ') for x in datasets_categoria_cols],
+          y=indicadores[datasets_categoria_cols].tail(1).iloc[0],
+        )
       ],
     }
   ),
