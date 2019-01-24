@@ -26,21 +26,21 @@ cantidad_datasets = len(data_json["dataset"])
 # Cantidad de Datasets por organización
 cantidad_datasets_org = Counter([ normalizeColumnName('datasets_organizacion_' + dataset["source"].split(".")[0]) for dataset in data_json["dataset"] ])
 
+# Cantidad de Datasets por categoría
+cantidad_datasets_cat = Counter([ normalizeColumnName("datasets_categoria_" + theme) for dataset in data_json["dataset"] for theme in dataset["theme"] ])
+
+# Cantidad de Recursos
+cantidad_recursos = sum([ len(dataset["distribution"]) for dataset in data_json["dataset"] ])
+
 # Cantidad de Recursos por organización
 cantidad_recursos_org = Counter()
 for x in [ ( normalizeColumnName("recursos_organizacion_" + dataset["source"].split(".")[0]), len(dataset["distribution"]) ) for dataset in data_json["dataset"] ]:
   cantidad_recursos_org.update(Counter(dict([x])))
 
-# Cantidad de Datasets por categoría
-cantidad_datasets_cat = Counter([ normalizeColumnName("datasets_categoria_" + theme) for theme in dataset["theme"] for dataset in data_json["dataset"] ])
-
 # Cantidad de Recursos por categoría
 cantidad_recursos_cat = Counter()
-for x in [ ( normalizeColumnName("recursos_categoria_" + theme), len(dataset["distribution"]) ) for theme in dataset["theme"] for dataset in data_json["dataset"] ]:
+for x in [ ( normalizeColumnName("recursos_categoria_" + theme), len(dataset["distribution"]) ) for dataset in data_json["dataset"] for theme in dataset["theme"] ]:
   cantidad_recursos_cat.update(Counter(dict([x])))
-
-# Cantidad total de recursos
-cantidad_recursos = sum([ len(dataset["distribution"]) for dataset in data_json["dataset"] ])
 
 indicadores = pd.read_csv("{}indicadores.csv".format(os.environ["SOURCE_PATH"]))
 

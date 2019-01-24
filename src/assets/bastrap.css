@@ -144,7 +144,7 @@
     .h2,
     h3,
     .h3 {
-      font-family: "CHANEWEI", Helvetica, Arial, sans-serif;
+      font-family: "CHANEWEI", Helvetica, Arial, sans-serif !important;
       letter-spacing: -0.5px;
     }
 
