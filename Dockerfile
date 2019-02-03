@@ -1,15 +1,19 @@
-FROM ubuntu:latest
+FROM centos:7
+
+RUN yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+
+RUN yum -y update
+
+RUN yum install -y crontabs python36u python36u-libs python36u-devel python36u-pip initscripts && yum clean all
+
+COPY ["./src/requirements.txt", "/opt/tablero/requirements.txt"]
+
+WORKDIR /opt/tablero
+
+RUN pip3.6 install -r requirements.txt
+
+COPY ["./src", "/opt/tablero"]
 
 EXPOSE 8050
 
-COPY ["./src", "/usr/src/"]
-
-WORKDIR /usr/src
-
-RUN apt-get update
-
-RUN apt-get -y install python-pip cron
-
-RUN pip install -r requirements.txt
-
-CMD su -c "service cron start && python cron.py" && python tablero.py
+CMD su -c "python3.6 cron.py" && python3.6 tablero.py
