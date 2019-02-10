@@ -1,2 +1,2 @@
 .env
-src/indicadores.csv
+__pycache__
