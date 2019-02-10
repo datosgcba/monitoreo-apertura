@@ -2,6 +2,7 @@
 import os
 import sys
 import json
+import time
 import schedule
 import requests
 import datetime
@@ -70,3 +71,4 @@ def run ():
 
   while True:
     schedule.run_pending()
+    time.sleep(1)
