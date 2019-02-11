@@ -1,12 +1,9 @@
 # coding=utf-8
 import os
-import sys
 import dash
 import cron
 import tablero
 import pandas as pd
-from ftplib import FTP
-from io import StringIO
 from multiprocessing import Process
 
 app = dash.Dash()
@@ -19,7 +16,6 @@ indicadores['fecha'] = pd.to_datetime(indicadores['fecha'], format='%d/%m/%Y:%H:
 
 app.layout = tablero.layout(indicadores)
 
-p = Process(target=cron.run)
-p.start()
+Process(target=cron.run).start()
 
 app.run_server(host='0.0.0.0')
