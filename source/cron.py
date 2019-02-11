@@ -46,7 +46,7 @@ class str_to_bytes:
 def job():
   ftp = FTP(os.environ["FTP_HOST"], os.environ["FTP_USER"], os.environ["FTP_PASS"])
   csv_old = StringIO()
-  ftp.retrlines('RETR /tablero-apertura/indicadores.csv', lambda line: csv_old.write("%s\n" % line))
+  ftp.retrlines('RETR /datasets/tablero-apertura/indicadores.csv', lambda line: csv_old.write("%s\n" % line))
   csv_old.seek(0)
 
   data_json = requests.get(os.environ["DATA_JSON_URL"]).json()
@@ -61,8 +61,8 @@ def job():
 
   data_json_stream = StringIO(json.dumps(data_json))
 
-  ftp.storbinary('STOR /tablero-apertura/indicadores.csv', str_to_bytes(csv_new))
-  ftp.storbinary('STOR /tablero-apertura/data-{}.json'.format(datetime.datetime.now().strftime('%d-%m-%Y')), str_to_bytes(data_json_stream))
+  ftp.storbinary('STOR /datasets/tablero-apertura/indicadores.csv', str_to_bytes(csv_new))
+  ftp.storbinary('STOR /datasets/tablero-apertura/data-{}.json'.format(datetime.datetime.now().strftime('%d-%m-%Y')), str_to_bytes(data_json_stream))
 
   ftp.close()
 
