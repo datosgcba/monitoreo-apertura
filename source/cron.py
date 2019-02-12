@@ -58,7 +58,6 @@ def job():
   csv_new = StringIO()
   dataframe.to_csv(csv_new, index=False)
   csv_new.seek(0)
-
   data_json_stream = StringIO(json.dumps(data_json))
 
   ftp.storbinary('STOR /datasets/tablero-apertura/indicadores.csv', str_to_bytes(csv_new))
