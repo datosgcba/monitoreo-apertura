@@ -14,6 +14,6 @@ RUN pip3.6 install -r requirements.txt
 
 COPY ["./source", "/opt/tablero"]
 
-EXPOSE 8050
+EXPOSE 8080
 
 CMD python3.6 app.py

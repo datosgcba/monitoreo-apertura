@@ -22,4 +22,4 @@ app.layout = tablero.layout(indicadores)
 
 Process(target=cron.run).start()
 
-app.run_server(host='0.0.0.0')
+app.run_server(port=8080, host='0.0.0.0')
