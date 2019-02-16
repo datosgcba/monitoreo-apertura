@@ -8,11 +8,11 @@ import datetime
 import indicadores
 import pandas as pd
 from ftplib import FTP
-from io import StringIOBytesIO
+from io import StringIO
 from apiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
-with open("../config.yml", 'r') as ymlfile:
+with open("config.yml", 'r') as ymlfile:
   config = yaml.load(ymlfile)
 
 def actualiza_dataframe (dataframe, nuevos_indicadores):

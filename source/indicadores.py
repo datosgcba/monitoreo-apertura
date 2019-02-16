@@ -1,5 +1,4 @@
 # coding=utf-8 
-import ga
 import datetime
 import unidecode
 import pandas as pd
@@ -16,7 +15,7 @@ def normalize_dataset_from_path (path):
   return path.split('/')[-1]
 
 def armar_indicadores_ga (ga_totales, ga_datasets, datasets):
-  df = pd.DataFrame.from_records(data=ga_metricas_dataset['rows'], columns=[ x['name'] for x in ga_metricas_dataset['columnHeaders'] ])
+  df = pd.DataFrame.from_records(data=ga_datasets['rows'], columns=[ x['name'] for x in ga_datasets['columnHeaders'] ])
   df['ga:pageviews'] = df['ga:pageviews'].astype('int')
   df['ga:pagePathLevel2'] = df['ga:pagePathLevel2'].apply(lambda x: normalize_dataset_from_path(x))
   df = df.groupby(['ga:pagePathLevel2']).sum().reset_index()
@@ -24,12 +23,10 @@ def armar_indicadores_ga (ga_totales, ga_datasets, datasets):
   df.index = df['ga:pagePathLevel2'].apply(lambda x: 'vistas_dataset_{}'.format(x.replace('-', '_')))
   df = df[['ga:pageviews']].transpose()
 
-  df['vistas_totales'] = ga_metricas_total['totalsForAllResults']['ga:pageviews']
-  df['vistas_totales_unicas'] = ga_metricas_total['totalsForAllResults']['ga:uniquePageviews']
+  df['vistas_totales'] = ga_totales['totalsForAllResults']['ga:pageviews']
+  df['vistas_totales_unicas'] = ga_totales['totalsForAllResults']['ga:uniquePageviews']
 
-  df.to_csv('datasets-ga.csv', index=False)
-
-  return df.to_dict()
+  return df.to_dict('records')[0]
 
 def calcular (data_json, metricas):
   indicadores = {}

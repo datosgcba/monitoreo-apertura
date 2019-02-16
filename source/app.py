@@ -7,7 +7,7 @@ import tablero
 import pandas as pd
 from multiprocessing import Process
 
-with open("../config.yml", 'r') as ymlfile:
+with open("config.yml", 'r') as ymlfile:
   config = yaml.load(ymlfile)
 
 app = dash.Dash()

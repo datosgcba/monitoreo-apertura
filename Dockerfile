@@ -12,6 +12,8 @@ WORKDIR /opt/tablero
 
 RUN pip3.6 install -r requirements.txt
 
+COPY ["./config.yml", "/opt/tablero/config.yml"]
+
 COPY ["./source", "/opt/tablero"]
 
 EXPOSE 8080
