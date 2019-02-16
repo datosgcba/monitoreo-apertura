@@ -3,11 +3,14 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 def layout (indicadores):
+  vistas_dataset_cols = [column for column in indicadores.columns if column.startswith('vistas_dataset_')]
   datasets_organizacion_cols = [column for column in indicadores.columns if column.startswith('datasets_organizacion_')]
   datasets_categoria_cols = [column for column in indicadores.columns if column.startswith('datasets_categoria_')]
 
   return html.Div(children=[
-    html.H2("Cantidad de Datasets: {}".format(indicadores.tail(1).iloc[0].at['cantidad_datasets']), className='text-center'),
+    html.H2("Datasets: {}".format(indicadores.tail(1).iloc[0].at['cantidad_datasets']), className='text-center'),
+    html.P("Visitas totales del portal: {}".format(int(indicadores.tail(1).iloc[0].at['vistas_totales'])), className='text-center'),
+    html.P("Visitas únicas totales del portal: {}".format(int(indicadores.tail(1).iloc[0].at['vistas_totales_unicas'])), className='text-center'),
     dcc.Graph(
       id='cantidad_datasets_org',
       figure={
@@ -62,7 +65,23 @@ def layout (indicadores):
         ],
       }
     ),
-    html.H2("Cantidad de Recuros: {}".format(indicadores.tail(1).iloc[0].at['cantidad_recursos']), className='text-center'),
+    dcc.Graph(
+      id='cantidad_vistas_datasets',
+      figure={
+        'data': [
+          go.Scatter(
+            x=indicadores['fecha'],
+            y=indicadores[column],
+            name=column.replace('vistas_dataset_', '').replace('_', ' '),
+            mode='lines'
+          ) for column in vistas_dataset_cols
+        ],
+        'layout': {
+          'title': 'Cantidad de vistas por dataset'
+        }
+      }
+    ),
+    html.H2("Recuros: {}".format(indicadores.tail(1).iloc[0].at['cantidad_recursos']), className='text-center'),
     dcc.Graph(
       id='cantidad_recursos_org',
       figure={
