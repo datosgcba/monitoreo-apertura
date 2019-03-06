@@ -123,8 +123,8 @@ common_figure = dict(
 def render_content(tab):
   if tab == 'org':
     common_figure['data'] = [go.Scatter(
-      y=df[df['tipo'] == 'organizacion']['datasets'],
-      x=df[df['tipo'] == 'organizacion']['recursos'],
+      y=df[df['tipo'] == 'organizacion']['recursos'],
+      x=df[df['tipo'] == 'organizacion']['datasets'],
       text=df[df['tipo'] == 'organizacion']['nombre'],
       customdata=df[df['tipo'] == 'organizacion']['nombre'].apply(lambda x: 'datasets_organizacion_{}'.format(x.replace(' ', '_'))),
       mode='markers',
@@ -141,8 +141,8 @@ def render_content(tab):
 
   elif tab == 'cat':
     common_figure['data'] = [go.Scatter(
-      y=df[df['tipo'] == 'categoria']['datasets'],
-      x=df[df['tipo'] == 'categoria']['recursos'],
+      y=df[df['tipo'] == 'categoria']['recursos'],
+      x=df[df['tipo'] == 'categoria']['datasets'],
       text=df[df['tipo'] == 'categoria']['nombre'],
       customdata=df[df['tipo'] == 'categoria']['nombre'].apply(lambda x: 'datasets_categoria_{}'.format(x.replace(' ', '_'))),
       mode='markers',
@@ -169,7 +169,6 @@ def render_content(clickData):
       go.Scatter(
         y=indicadores_hist[columna],
         x=indicadores_hist['fecha'],
-        text=" ".join(columna.split('_')[1:]),
         mode='lines',
       )
     ],
