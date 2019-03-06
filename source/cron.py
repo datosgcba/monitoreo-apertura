@@ -68,9 +68,9 @@ def job ():
   ftp.retrlines('RETR /{}/indicadores.csv'.format(ftp_config['dir']), lambda line: csv_old.write("%s\n" % line))
   csv_old.seek(0)
 
-  metricas = get_ga_metrics()
+  ga_metricas = get_ga_metrics()
   data_json = requests.get(config['archivos']['data_json']).json()
-  nuevos_indicadores = indicadores.calcular(data_json, metricas)
+  nuevos_indicadores = indicadores.calcular(data_json, ga_metricas)
 
   dataframe = pd.read_csv(csv_old)
   dataframe = actualiza_dataframe(dataframe, nuevos_indicadores)

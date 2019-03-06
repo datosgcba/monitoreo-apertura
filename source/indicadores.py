@@ -7,28 +7,42 @@ from collections import Counter
 def normalizarNombreColumna (string):
   return "_".join([ "".join(list(filter(str.isalnum, s))) for s in unidecode.unidecode(string.lower().replace(' ', '_').replace('-', '_')).split('_') ])
 
-def normalize_dataset_from_path (path):
+def normalizarNombrePathDataset (path):
   if '?' in path:
     path = path.split('?')[0]
   if path.endswith('/'):
     path = path[:-1]
-  return path.split('/')[-1]
+  path = path.split('/')[-1]
+  return path
 
-def armar_indicadores_ga (ga_totales, ga_datasets, datasets):
-  df = pd.DataFrame.from_records(data=ga_datasets['rows'], columns=[ x['name'] for x in ga_datasets['columnHeaders'] ])
-  df['ga:pageviews'] = df['ga:pageviews'].astype('int')
-  df['ga:pagePathLevel2'] = df['ga:pagePathLevel2'].apply(lambda x: normalize_dataset_from_path(x))
-  df = df.groupby(['ga:pagePathLevel2']).sum().reset_index()
-  df = df[df['ga:pagePathLevel2'].isin(datasets)]
-  df.index = df['ga:pagePathLevel2'].apply(lambda x: 'vistas_dataset_{}'.format(x.replace('-', '_')))
-  df = df[['ga:pageviews']].transpose()
+def armarIndicadoresGa (ga_datasets, org_cat_dataset):
+  views_by_categoria = {}
+  views_by_org = {}
+  ga_datasets_dict = { normalizarNombrePathDataset(x[0]): x[1] for x in ga_datasets['rows'] }
+  
+  for (dataset, org, categorias) in org_cat_dataset:
+    org = normalizarNombreColumna('vistas_organizacion_{}'.format(org))
+    categorias = [ normalizarNombreColumna('vistas_categoria_{}'.format(cat)) for cat in categorias ]
+    if dataset in ga_datasets_dict.keys():
+      views = int(ga_datasets_dict[dataset])
+      if org in views_by_org.keys():
+        views_by_org[org] += views
+      else:
+        views_by_org[org] = views
+      
+      for categoria in categorias:
+        if categoria in views_by_categoria.keys():
+          views_by_categoria[categoria] += views
+        else:
+          views_by_categoria[categoria] = views
 
-  df['vistas_totales'] = ga_totales['totalsForAllResults']['ga:pageviews']
-  df['vistas_totales_unicas'] = ga_totales['totalsForAllResults']['ga:uniquePageviews']
+  full_dict = {}
+  full_dict.update(views_by_categoria)
+  full_dict.update(views_by_org)
+  
+  return full_dict
 
-  return df.to_dict('records')[0]
-
-def calcular (data_json, metricas):
+def calcular (data_json, ga_metricas):
   indicadores = {}
 
   # Fecha actual
@@ -47,18 +61,30 @@ def calcular (data_json, metricas):
   indicadores['cantidad_recursos'] = sum([ len(dataset["distribution"]) for dataset in data_json["dataset"] ])
 
   # Cantidad de Recursos por organización
-  cantidad_recursos_org = Counter()
-  for x in [ ( normalizarNombreColumna("recursos_organizacion_" + dataset["source"].split(".")[0]), len(dataset["distribution"]) ) for dataset in data_json["dataset"] ]:
-    cantidad_recursos_org.update(Counter(dict([x])))
+  cantidad_recursos_org = {}
+  recursos_por_datasets_org = [ ( normalizarNombreColumna("recursos_organizacion_" + dataset["source"].split(".")[0]), len(dataset["distribution"]) ) for dataset in data_json["dataset"] ]
+  for recurso_por_dataset in recursos_por_datasets_org:
+    if recurso_por_dataset[0] in cantidad_recursos_org:
+      cantidad_recursos_org[recurso_por_dataset[0]] += recurso_por_dataset[1]
+    else: 
+      cantidad_recursos_org[recurso_por_dataset[0]] = recurso_por_dataset[1]
   indicadores.update(cantidad_recursos_org)
 
   # Cantidad de Recursos por categoría
-  cantidad_recursos_cat = Counter()
-  for x in [ ( normalizarNombreColumna("recursos_categoria_" + theme), len(dataset["distribution"]) ) for dataset in data_json["dataset"] for theme in dataset["theme"] ]:
-    cantidad_recursos_cat.update(Counter(dict([x])))
+  cantidad_recursos_cat = {}
+  recursos_por_datasets_cat = [ ( normalizarNombreColumna("recursos_categoria_" + theme), len(dataset["distribution"]) ) for dataset in data_json["dataset"] for theme in dataset["theme"] ]
+  for recurso_por_dataset in recursos_por_datasets_cat:
+    if recurso_por_dataset[0] in cantidad_recursos_cat:
+      cantidad_recursos_cat[recurso_por_dataset[0]] += recurso_por_dataset[1]
+    else: 
+      cantidad_recursos_cat[recurso_por_dataset[0]] = recurso_por_dataset[1]
   indicadores.update(cantidad_recursos_cat)
 
-  ga_indicadores = armar_indicadores_ga(metricas['ga_totales'], metricas['ga_datasets'], [ normalize_dataset_from_path(dataset['landingPage']) for dataset in data_json["dataset"] ])
+  # Metricas Google Analytics
+  ga_indicadores = armarIndicadoresGa(ga_metricas['ga_datasets'], [ (normalizarNombrePathDataset(dataset['landingPage']), dataset["source"].split(".")[0], dataset["theme"]) for dataset in data_json["dataset"] ])
   indicadores.update(ga_indicadores)
+
+  indicadores['vistas_totales'] = ga_metricas['ga_totales']['totalsForAllResults']['ga:pageviews']
+  indicadores['vistas_totales_unicas'] = ga_metricas['ga_totales']['totalsForAllResults']['ga:uniquePageviews']
 
   return indicadores
