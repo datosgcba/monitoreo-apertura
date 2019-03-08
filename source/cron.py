@@ -13,7 +13,7 @@ from apiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
 with open("config.yml", 'r') as ymlfile:
-  config = yaml.load(ymlfile)
+  config = yaml.full_load(ymlfile)
 
 def actualiza_dataframe (dataframe, nuevos_indicadores):
   for columna in nuevos_indicadores.keys():

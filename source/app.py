@@ -16,11 +16,11 @@ from dash.dependencies import Input, Output
 Process(target=cron.run).start()
 
 with open("config.yml", 'r') as ymlfile:
-  config = yaml.load(ymlfile)
+  config = yaml.full_load(ymlfile)
 
 app = dash.Dash()
 
-template = open("template.html", "r") 
+template = open("template.html", "r")
 app.index_string = template.read()
 
 data_json = requests.get(config['archivos']['data_json']).json()
