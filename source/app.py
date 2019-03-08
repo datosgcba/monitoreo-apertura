@@ -115,7 +115,8 @@ common_figure = dict(
       title='Cantidad de recursos',
     ),
     showlegend=False,
-    height=600
+    height=600,
+    hovermode='closest'
   )
 )
 
