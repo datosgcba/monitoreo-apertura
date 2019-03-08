@@ -4,7 +4,6 @@ import math
 import dash
 import cron
 import yaml
-import tablero
 import requests
 import pandas as pd
 import plotly.graph_objs as go
