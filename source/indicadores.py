@@ -87,4 +87,19 @@ def calcular (data_json, ga_metricas):
   indicadores['vistas_totales'] = ga_metricas['ga_totales']['totalsForAllResults']['ga:pageviews']
   indicadores['vistas_totales_unicas'] = ga_metricas['ga_totales']['totalsForAllResults']['ga:uniquePageviews']
 
+  # Cantidad de datasets por frecuencia de actualización
+  indicadores.update(Counter([ normalizarNombreColumna('datasets_frecuencia_' + dataset["accrualPeriodicity"]) for dataset in data_json["dataset"] ]))
+
+  # Cantidad de datasets formato por distribución
+  indicadores.update(Counter([ normalizarNombreColumna('recursos_formato_' + (distribution["format"] if 'format' in distribution.keys() else 'NO_FORMAT')) for dataset in data_json["dataset"] for distribution in dataset["distribution"] ]))
+
+  # Cantidad de datasets Keywords
+  indicadores.update(Counter([ normalizarNombreColumna('dataset_keyword_' + keyword) for dataset in data_json["dataset"] for keyword in dataset["keyword"] ]))
+
+  # Cantidad de datasets por publicador
+  indicadores.update(Counter([ normalizarNombreColumna('datasets_publicador_' + dataset["publisher"]['name']) for dataset in data_json["dataset"] ]))
+
+  # Cantidad de datasets por fuente
+  indicadores.update(Counter([ normalizarNombreColumna('datasets_fuente_' + dataset["source"]) for dataset in data_json["dataset"] ]))
+
   return indicadores
