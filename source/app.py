@@ -225,4 +225,10 @@ def render_content(clickData):
 
   return "{} Vistas".format(valor)
 
-app.run_server(port=8080, host='0.0.0.0', debug=True)
+@app.server.after_request
+def after_request(response):
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["Server"] = ""
+    return response
+
+app.run_server(port=8080, host='0.0.0.0')
