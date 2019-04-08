@@ -14,9 +14,7 @@ from dash.dependencies import Input, Output
 
 Process(target=cron.run).start()
 
-with open("../config.yml", 'r') as ymlfile:
-  config = yaml.full_load(ymlfile)
-
+config = yaml.full_load(open("../config.yml", 'r'))
 app = dash.Dash()
 
 template = open("template.html", "r")

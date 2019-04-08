@@ -5,8 +5,7 @@ import urllib
 from oauth2client.service_account import ServiceAccountCredentials
 from apiclient.discovery import build
 
-with open("../config.yml", 'r') as ymlfile:
-  config = yaml.full_load(ymlfile)
+config = yaml.full_load(open("../config.yml", 'r'))
 
 def getGaData():
   profile_id = None
@@ -64,7 +63,7 @@ def getBusquedas (ga_data):
   return busquedas
 
 def updateDatajson(ga_data, data_json):
-  ga_data_datasets = [ [urllib.parse.urlparse('https://data.buenosaires.gob.ar{}'.format(row[0])).path.split('/')[2], row[1], row[2]] for row in ga_data if 'dataset/' in row[0]]
+  ga_data_datasets = [ [urllib.parse.urlparse('https://data.buenosaires.gob.ar{}'.format(row[0])).path.split('/')[2], row[1], row[2]] for row in ga_data if 'dataset/' in row[0] ]
 
   for i, dataset in enumerate(data_json['dataset']):
     vistas = { 'totales': 0, 'unicas': 0 }
