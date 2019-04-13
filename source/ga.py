@@ -1,9 +1,10 @@
 # coding=utf-8 
-import requests
 import yaml
 import urllib
-from oauth2client.service_account import ServiceAccountCredentials
+import requests
+import datetime
 from apiclient.discovery import build
+from oauth2client.service_account import ServiceAccountCredentials
 
 config = yaml.full_load(open("../config.yml", 'r'))
 
@@ -49,6 +50,7 @@ def getGaData():
 
 def getBusquedas (ga_data):
   busquedas = []
+  fecha = datetime.datetime.now().strftime('%d/%m/%Y')
   for ga_row in ga_data:
     url = urllib.parse.urlparse('https://data.buenosaires.gob.ar{}'.format(ga_row[0]))
     url_params = urllib.parse.parse_qs(url.query)
@@ -58,7 +60,7 @@ def getBusquedas (ga_data):
         busquedas[ind][1] += int(ga_row[1])
         busquedas[ind][2] += int(ga_row[2])
       except ValueError:
-        busquedas.append({ 'query': url_params['q'][0], 'vistas_totales': int(ga_row[1]), 'vistas_unicas': int(ga_row[2]) })
+        busquedas.append({ 'query': url_params['q'][0], 'vistas_totales': int(ga_row[1]), 'vistas_unicas': int(ga_row[2]), 'fecha': fecha })
 
   return busquedas
 
