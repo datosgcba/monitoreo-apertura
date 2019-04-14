@@ -48,9 +48,8 @@ def getGaData():
 
   return resultado['rows']
 
-def getBusquedas (ga_data):
+def getBusquedas (ga_data, fecha):
   busquedas = []
-  fecha = datetime.datetime.now().strftime('%d/%m/%Y')
   for ga_row in ga_data:
     url = urllib.parse.urlparse('https://data.buenosaires.gob.ar{}'.format(ga_row[0]))
     url_params = urllib.parse.parse_qs(url.query)

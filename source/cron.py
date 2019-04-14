@@ -16,13 +16,21 @@ connection = MongoClient(config['mongo_url'])
 db = connection['monitoreo-apertura']
 
 def job ():
+  # fecha = datetime.datetime.utcnow()
+
   # ga_data = getGaData()
   
-  # busquedas = getBusquedas(ga_data)
+  # busquedas = getBusquedas(ga_data, fecha)
   # db['busquedas'].insert_many(busquedas)
 
   # data_json = requests.get(config['archivos']['data_json']).json()
-  # data_json['fecha'] = datetime.datetime.now().strftime('%d/%m/%Y')
+  # data_json['fecha'] = fecha
+  # for dataset in data_json['dataset']:
+  #   dataset['modified'] = datetime.datetime.strptime(dataset['modified'], '%Y-%m-%dT%H:%M:%S.%f')
+  #   for distribution in dataset['distribution']:
+  #     if 'modified' in distribution.keys():
+  #       distribution['modified'] = datetime.datetime.strptime(distribution['modified'], '%Y-%m-%dT%H:%M:%S.%f')
+      
   # data_json = updateDatajson(ga_data, data_json)
   # db['data-json'].insert_one(data_json)
   
