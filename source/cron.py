@@ -17,14 +17,15 @@ db = connection['monitoreo-apertura']
 
 def job ():
   # fecha = datetime.datetime.utcnow()
-
   # ga_data = getGaData()
   
   # busquedas = getBusquedas(ga_data, fecha)
   # db['busquedas'].insert_many(busquedas)
 
   # data_json = requests.get(config['archivos']['data_json']).json()
+  
   # data_json['fecha'] = fecha
+  
   # for dataset in data_json['dataset']:
   #   dataset['modified'] = datetime.datetime.strptime(dataset['modified'], '%Y-%m-%dT%H:%M:%S.%f')
   #   for distribution in dataset['distribution']:
@@ -32,11 +33,10 @@ def job ():
   #       distribution['modified'] = datetime.datetime.strptime(distribution['modified'], '%Y-%m-%dT%H:%M:%S.%f')
       
   # data_json = updateDatajson(ga_data, data_json)
+  
   # db['data-json'].insert_one(data_json)
   
   cache.set('indicadores', indicadores.crearIndicadores(db))
-
-  pprint.pprint(cache.get('indicadores'))
 
 def run ():
   schedule.every().day.at("00:00").do(job)

@@ -1,3 +1,10 @@
+
+#react-entry-point{
+  min-height: 79%;
+}
+body{
+  height: 100%;
+}
 #tabs-parent {
   margin: 30px 0;
 }
