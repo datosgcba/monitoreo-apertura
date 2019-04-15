@@ -4,13 +4,28 @@ import datetime
 def crearIndicadores(db):
   indicadores = {}
 
+  indicadores['por_totales'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 120},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } }
+      },
+      "datasets": {"$sum": 1},
+      "recursos": {"$sum": { "$size": "$dataset.distribution" }},
+      "vistas_totales": {"$sum": "$dataset.vistas.totales"},
+      "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
+    }}
+  ]))
+
   indicadores['por_organizacion'] = list(db['data-json'].aggregate([
     {"$sort": {"_id": -1}},
     {"$limit": 120},
     {"$unwind": "$dataset"},
     {"$group": {
       "_id": {
-        "fecha": "$fecha",
+        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
         "organizacion": { "$arrayElemAt": [{ "$split": ["$dataset.source", "."] }, 0] }
       },
       "datasets": {"$sum": 1},
@@ -27,7 +42,7 @@ def crearIndicadores(db):
     {"$unwind": "$dataset.theme"},
     {"$group": {
       "_id": {
-        "fecha": "$fecha",
+        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
         "categoria": "$dataset.theme"
       },
       "datasets": {"$sum": 1},
@@ -42,7 +57,7 @@ def crearIndicadores(db):
     {"$limit": 120},
     {"$group": {
       "_id": {
-        "fecha": "$fecha",
+        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
         "query": "$query"
       },
       "vistas_totales": {"$sum": "$vistas_totales"},
@@ -56,7 +71,7 @@ def crearIndicadores(db):
     {"$unwind": "$dataset"},
     {"$group": {
       "_id": {
-        "fecha": "$fecha",
+        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
         "frecuencia": "$dataset.accrualPeriodicity"
       },
       "datasets": {"$sum": 1}
@@ -70,7 +85,7 @@ def crearIndicadores(db):
     {"$unwind": "$dataset.distribution"},
     {"$group": {
       "_id": {
-        "fecha": "$fecha",
+        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
         "formato": "$dataset.distribution.format"
       },
       "recursos": {"$sum": 1},
@@ -84,7 +99,7 @@ def crearIndicadores(db):
     {"$unwind": "$dataset.keyword"},
     {"$group": {
       "_id": {
-        "fecha": "$fecha",
+        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
         "keyword": "$dataset.keyword"
       },
       "datasets": {"$sum": 1},
@@ -97,7 +112,7 @@ def crearIndicadores(db):
     {"$unwind": "$dataset"},
     {"$group": {
       "_id": {
-        "fecha": "$fecha",
+        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
         "publicador": "$dataset.publisher.name"
       },
       "datasets": {"$sum": 1},
@@ -110,7 +125,7 @@ def crearIndicadores(db):
     {"$unwind": "$dataset"},
     {"$group": {
       "_id": {
-        "fecha": "$fecha",
+        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
         "fuente": "$dataset.source"
       },
       "datasets": {"$sum": 1},

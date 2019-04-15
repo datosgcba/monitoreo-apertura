@@ -1,4 +1,6 @@
-
+.container{
+  width: 100%!important;
+}
 #react-entry-point{
   min-height: 79%;
 }
