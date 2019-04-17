@@ -92,42 +92,91 @@ def callbacks (app):
   def render_content(clickData, tab):
     indicadores = cache.get('indicadores')
     por_tab = indicadores["por_organizacion" if tab == 'org' else "por_categoria"]
+    annotations = []
 
     if 'text' in clickData['points'][0]:
       data = [x for x in por_tab if x['_id']['organizacion' if tab == 'org' else 'categoria'] == clickData['points'][0]['text']]
     else:
       data = indicadores["por_totales"]
 
-    datasets = go.Scatter(
+    fig = tools.make_subplots(
+      rows=3,
+      cols=1,
+      specs=[[{}], [{}], [{}]],
+      shared_xaxes=True,
+      shared_yaxes=True,
+      vertical_spacing=0.1
+    )
+
+    fig.append_trace(go.Scatter(
       y=[x['datasets'] for x in data],
       x=[x['_id']['fecha'] for x in data],
       mode='lines',
+      line=dict(color='#1f77b4'),
+      showlegend=False,
       name='Datasets'
-    )
-    
-    recursos = go.Scatter(
+    ), 1, 1)
+
+    annotations.append(dict(
+      yref='y1',
+      xanchor='left',
+      yanchor='middle',
+      x=data[-1]['_id']['fecha'],
+      y=data[-1]['datasets'],
+      text='{} Datasets'.format(data[-1]['datasets']),
+      font=dict(color='white'),
+      bgcolor='#1f77b4',
+      borderpad=2,
+      showarrow=False
+    ))
+
+    fig.append_trace(go.Scatter(
       y=[x['recursos'] for x in data],
       x=[x['_id']['fecha'] for x in data],
       mode='lines',
+      line=dict(color='#1f77b4'),
+      showlegend=False,
       name='Recursos'
-    )
+    ), 2, 1)
 
-    vistas = go.Scatter(
+    annotations.append(dict(
+      yref='y2',
+      xanchor='left',
+      yanchor='middle',
+      x=data[-1]['_id']['fecha'],
+      y=data[-1]['recursos'],
+      text='{} Recursos'.format(data[-1]['recursos']),
+      font=dict(color='white'),
+      bgcolor='#1f77b4',
+      borderpad=2,
+      showarrow=False
+    ))
+
+    fig.append_trace(go.Scatter(
       y=[x['vistas_unicas'] for x in data],
       x=[x['_id']['fecha'] for x in data],
       mode='lines',
+      line=dict(color='#1f77b4'),
+      showlegend=False,
       name='Vistas únicas'
-    )
+    ), 3, 1)
 
-    fig = tools.make_subplots(rows=3, cols=1, specs=[[{}], [{}], [{}]],
-                              shared_xaxes=True, shared_yaxes=True,
-                              vertical_spacing=0.001)
+    annotations.append(dict(
+      yref='y3',
+      xanchor='left',
+      yanchor='middle',
+      x=data[-1]['_id']['fecha'],
+      y=data[-1]['vistas_unicas'],
+      text='{} Vistas Únicas'.format(data[-1]['vistas_unicas']),
+      font=dict(color='white'),
+      bgcolor='#1f77b4',
+      borderpad=2,
+      showarrow=False
+    ))
 
-    fig.append_trace(datasets, 3, 1)
-    fig.append_trace(recursos, 2, 1)
-    fig.append_trace(vistas, 1, 1)
+    fig['layout']['annotations'] = annotations
 
-    fig['layout'].update(height=600,)
+    fig['layout']['height'] = 600
 
     return fig
 
@@ -136,7 +185,6 @@ def callbacks (app):
   # ==============================
   @app.callback(Output('linea-titulo', 'children'), [Input('bubble', 'clickData')])
   def render_content(clickData):
-    # print(clickData)
     if not clickData:
       return 'Totales'
 
@@ -144,38 +192,3 @@ def callbacks (app):
       return clickData['points'][0]['text']
     else:
       return 'Totales'
-
-  # @app.callback(Output('linea-datasets', 'children'), [Input('bubble', 'clickData')])
-  # def render_content(clickData):
-  #   columna = clickData['points'][-1]['customdata']
-    
-  #   if columna == 'totales':
-  #     columna = 'cantidad_datasets'
-  #   valor = indicadores_hist[columna].tail(1).iloc[0]
-
-  #   return "{} Datasets".format(valor)
-
-  # @app.callback(Output('linea-recursos', 'children'), [Input('bubble', 'clickData')])
-  # def render_content(clickData):
-  #   columna = clickData['points'][-1]['customdata']
-    
-  #   if columna == 'totales':
-  #     columna = 'cantidad_recursos'
-  #   else:
-  #     columna = columna.replace('datasets_organizacion_', 'recursos_organizacion_')
-  #   valor = indicadores_hist[columna].tail(1).iloc[0]
-
-  #   return "{} Recursos".format(valor)
-
-  # @app.callback(Output('linea-vistas', 'children'), [Input('bubble', 'clickData')])
-  # def render_content(clickData):
-  #   columna = clickData['points'][-1]['customdata']
-    
-  #   if columna == 'totales':
-  #     columna = 'vistas_totales'
-  #   else:
-  #     columna = columna.replace('datasets_organizacion_', 'vistas_organizacion_')
-
-  #   valor = indicadores_hist[columna].tail(1).iloc[0]
-
-  #   return "{} Vistas".format(valor)
