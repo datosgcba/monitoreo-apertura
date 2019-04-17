@@ -4,6 +4,7 @@ import math
 import dash
 import cron
 import yaml
+import datetime
 import requests
 import pandas as pd
 from plotly import tools
@@ -13,6 +14,16 @@ import dash_html_components as html
 from multiprocessing import Process
 from dash.dependencies import Input, Output, State
 from werkzeug.contrib.cache import FileSystemCache
+
+def diasDesdeHoy(num):
+  fechas = []
+  dt = datetime.datetime.utcnow()
+  step = datetime.timedelta(days=1)
+
+  for i in range(num):
+    fechas.append(dt.strftime('%Y-%m-%d'))
+    dt -= step
+  return fechas.reverse()
 
 cache = FileSystemCache(cache_dir="./.cache")
 
@@ -44,6 +55,9 @@ def layout():
   ])
 
 def callbacks (app):
+  @app.callback(Output('bubble', 'clickData'), [Input('tabs', 'value')])
+  def render_content(tab):
+    return {'points': [{'customdata': 'totales'}]}
   # ==============================
   #           Burbujas
   # ==============================
@@ -99,6 +113,8 @@ def callbacks (app):
     else:
       data = indicadores["por_totales"]
 
+    fechas = diasDesdeHoy(len(data))
+
     fig = tools.make_subplots(
       rows=3,
       cols=1,
@@ -110,7 +126,7 @@ def callbacks (app):
 
     fig.append_trace(go.Scatter(
       y=[x['datasets'] for x in data],
-      x=[x['_id']['fecha'] for x in data],
+      x=fechas,
       mode='lines',
       line=dict(color='#1f77b4'),
       showlegend=False,
@@ -121,7 +137,7 @@ def callbacks (app):
       yref='y1',
       xanchor='left',
       yanchor='middle',
-      x=data[-1]['_id']['fecha'],
+      x=fechas[-1],
       y=data[-1]['datasets'],
       text='{} Datasets'.format(data[-1]['datasets']),
       font=dict(color='white'),
@@ -132,7 +148,7 @@ def callbacks (app):
 
     fig.append_trace(go.Scatter(
       y=[x['recursos'] for x in data],
-      x=[x['_id']['fecha'] for x in data],
+      x=fechas,
       mode='lines',
       line=dict(color='#1f77b4'),
       showlegend=False,
@@ -143,7 +159,7 @@ def callbacks (app):
       yref='y2',
       xanchor='left',
       yanchor='middle',
-      x=data[-1]['_id']['fecha'],
+      x=fechas[-1],
       y=data[-1]['recursos'],
       text='{} Recursos'.format(data[-1]['recursos']),
       font=dict(color='white'),
@@ -154,7 +170,7 @@ def callbacks (app):
 
     fig.append_trace(go.Scatter(
       y=[x['vistas_unicas'] for x in data],
-      x=[x['_id']['fecha'] for x in data],
+      x=fechas,
       mode='lines',
       line=dict(color='#1f77b4'),
       showlegend=False,
@@ -165,7 +181,7 @@ def callbacks (app):
       yref='y3',
       xanchor='left',
       yanchor='middle',
-      x=data[-1]['_id']['fecha'],
+      x=fechas[-1],
       y=data[-1]['vistas_unicas'],
       text='{} Vistas Únicas'.format(data[-1]['vistas_unicas']),
       font=dict(color='white'),
@@ -177,6 +193,11 @@ def callbacks (app):
     fig['layout']['annotations'] = annotations
 
     fig['layout']['height'] = 600
+
+    # fig['layout']['xaxis'] = dict(
+    #   showgrid=False,
+    #   showticklabels=False
+    # )
 
     return fig
 

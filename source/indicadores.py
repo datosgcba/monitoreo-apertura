@@ -10,13 +10,14 @@ def crearIndicadores(db):
     {"$unwind": "$dataset"},
     {"$group": {
       "_id": {
-        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } }
+        "fecha": { "$divide": [{"$subtract":[datetime.datetime.utcnow(), "$fecha"]}, 1000 * 60 * 60 * 24] }
       },
       "datasets": {"$sum": 1},
       "recursos": {"$sum": { "$size": "$dataset.distribution" }},
       "vistas_totales": {"$sum": "$dataset.vistas.totales"},
       "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
-    }}
+    }},
+    {"$sort": {"_id.fecha": 1}}
   ]))
 
   indicadores['por_organizacion'] = list(db['data-json'].aggregate([
@@ -25,14 +26,15 @@ def crearIndicadores(db):
     {"$unwind": "$dataset"},
     {"$group": {
       "_id": {
-        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
+        "fecha": { "$divide": [{"$subtract":[datetime.datetime.utcnow(), "$fecha"]}, 1000 * 60 * 60 * 24] },
         "organizacion": { "$arrayElemAt": [{ "$split": ["$dataset.source", "."] }, 0] }
       },
       "datasets": {"$sum": 1},
       "recursos": {"$sum": { "$size": "$dataset.distribution" }},
       "vistas_totales": {"$sum": "$dataset.vistas.totales"},
       "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
-    }}
+    }},
+    {"$sort": {"_id.fecha": 1}}
   ]))
 
   indicadores['por_categoria'] = list(db['data-json'].aggregate([
@@ -42,14 +44,15 @@ def crearIndicadores(db):
     {"$unwind": "$dataset.theme"},
     {"$group": {
       "_id": {
-        "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
+        "fecha": { "$divide": [{"$subtract":[datetime.datetime.utcnow(), "$fecha"]}, 1000 * 60 * 60 * 24] },
         "categoria": "$dataset.theme"
       },
       "datasets": {"$sum": 1},
       "recursos": {"$sum": { "$size": "$dataset.distribution" }},
       "vistas_totales": {"$sum": "$dataset.vistas.totales"},
       "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
-    }}
+    }},
+    {"$sort": {"_id.fecha": 1}}
   ]))
 
   indicadores['busquedas'] = list(db['busquedas'].aggregate([
