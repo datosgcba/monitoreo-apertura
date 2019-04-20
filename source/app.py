@@ -1,20 +1,13 @@
 # coding=utf-8
-import os
-import math
 import dash
 import cron
-import yaml
-import requests
-import itertools
-import unidecode
-import pandas as pd
-import plotly.graph_objs as go
+import urllib
 import dash_core_components as dcc
 import dash_html_components as html
 from multiprocessing import Process
-from dash.dependencies import Input, Output, State
-from tableros import general, datosabiertos, organizacion
+from dash.dependencies import Input, Output
 from werkzeug.contrib.cache import FileSystemCache
+from tableros import general, datosabiertos, organizacion
 
 cache = FileSystemCache(cache_dir="./.cache")
 
@@ -23,27 +16,13 @@ cron.job()
 
 app = dash.Dash()
 template = open("template.html", "r")
-app.index_string = template.read()
-app.config['suppress_callback_exceptions']=True
 
+app.index_string = template.read()
+app.config['suppress_callback_exceptions'] = True
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content'),
 ])
-
-# def normalizarNombreColumna (string):
-#   return "_".join([
-#     "".join(
-#       list(
-#         filter(str.isalnum, s)
-#       )
-#     ) for s in unidecode.unidecode(
-#       string
-#         .lower()
-#         .replace(' ', '_')
-#         .replace('-', '_')
-#     ).split('_')
-#   ])
 
 # ==============================
 #           Router
@@ -52,16 +31,13 @@ app.layout = html.Div([
 def display_page(pathname):
   indicadores = cache.get('indicadores')
 
-  organizaciones = []
-  #  [normalizarNombreColumna(x['_id']['organizacion']) for x in indicadores['actualizacion_por_organizacion']]
-
   if(pathname == "/" or not pathname):
     return general.layout()
 
-  if(pathname == "/datos-abiertos"):
+  if(pathname == "/badata"):
     return datosabiertos.layout()
 
-  if(pathname.replace("/", "") in organizaciones):
+  if(pathname.replace("/", "") in [urllib.parse.quote(org) for org in set([x['_id']['organizacion'] for x in indicadores['por_organizacion']])]):
     return organizacion.layout(pathname)
 
   return general.layout()

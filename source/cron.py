@@ -1,7 +1,6 @@
 # coding=utf-8
 import yaml
 import time
-import pprint
 import datetime
 import schedule
 import requests

@@ -1,3 +1,6 @@
+._dash-undo-redo {
+  display: none;
+}
 .container{
   width: 100%!important;
 }

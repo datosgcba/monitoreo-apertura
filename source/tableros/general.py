@@ -1,17 +1,11 @@
 # coding=utf-8
-import os
-import math
 import dash
-import cron
-import yaml
+import urllib
 import datetime
-import requests
-import pandas as pd
 from plotly import tools
 import plotly.graph_objs as go
 import dash_core_components as dcc
 import dash_html_components as html
-from multiprocessing import Process
 from dash.dependencies import Input, Output, State
 from werkzeug.contrib.cache import FileSystemCache
 
@@ -23,7 +17,8 @@ def diasDesdeHoy(num):
   for i in range(num):
     fechas.append(dt.strftime('%Y-%m-%d'))
     dt -= step
-  return fechas.reverse()
+
+  return fechas[::-1]
 
 cache = FileSystemCache(cache_dir="./.cache")
 
@@ -39,17 +34,8 @@ def layout():
         clickData={'points': [{'customdata': 'totales'}]}
       ),
       html.Div([
-        html.Div(id='datos-linea', children=[
-          html.H5(id='linea-titulo'),
-          html.Div([
-            html.P(id='linea-datasets', className='label label-primary'),
-            html.P(id='linea-recursos', className='label label-primary'),
-            html.P(id='linea-vistas', className='label label-primary'),
-          ])
-        ]),
-        dcc.Graph(
-          id='linea-de-tiempo'
-        )
+        dcc.Graph(id='lineas-de-tiempo'),
+        html.Div(id='org-link', className='text-center')
       ])
     ])
   ])
@@ -59,7 +45,7 @@ def callbacks (app):
   def render_content(tab):
     return {'points': [{'customdata': 'totales'}]}
   # ==============================
-  #           Burbujas
+  #            Burbujas
   # ==============================
   @app.callback(Output('bubble', 'figure'), [Input('tabs', 'value')])
   def render_content(tab):
@@ -100,9 +86,17 @@ def callbacks (app):
     )
 
   # ==============================
-  #       Linea datasets
+  # Link a tablero de organización
   # ==============================
-  @app.callback(Output('linea-de-tiempo', 'figure'), [Input('bubble', 'clickData')], [State('tabs', 'value')])
+  @app.callback(Output('org-link', 'children'), [Input('bubble', 'clickData')], [State('tabs', 'value')])
+  def render_content(clickData, tab):
+    if 'text' in clickData['points'][0] and tab == 'org':
+      return dcc.Link('Ver tablero', href=urllib.parse.quote(clickData['points'][0]['text']), className='btn btn-link')
+
+  # ==============================
+  #       Lineas de tiempo
+  # ==============================
+  @app.callback(Output('lineas-de-tiempo', 'figure'), [Input('bubble', 'clickData')], [State('tabs', 'value')])
   def render_content(clickData, tab):
     indicadores = cache.get('indicadores')
     por_tab = indicadores["por_organizacion" if tab == 'org' else "por_categoria"]
@@ -112,7 +106,7 @@ def callbacks (app):
       data = [x for x in por_tab if x['_id']['organizacion' if tab == 'org' else 'categoria'] == clickData['points'][0]['text']]
     else:
       data = indicadores["por_totales"]
-
+    
     fechas = diasDesdeHoy(len(data))
 
     fig = tools.make_subplots(
@@ -124,6 +118,7 @@ def callbacks (app):
       vertical_spacing=0.1
     )
 
+    # Datasets
     fig.append_trace(go.Scatter(
       y=[x['datasets'] for x in data],
       x=fechas,
@@ -146,6 +141,7 @@ def callbacks (app):
       showarrow=False
     ))
 
+    # Recursos
     fig.append_trace(go.Scatter(
       y=[x['recursos'] for x in data],
       x=fechas,
@@ -168,6 +164,7 @@ def callbacks (app):
       showarrow=False
     ))
 
+    # Vistas únicas
     fig.append_trace(go.Scatter(
       y=[x['vistas_unicas'] for x in data],
       x=fechas,
@@ -183,7 +180,7 @@ def callbacks (app):
       yanchor='middle',
       x=fechas[-1],
       y=data[-1]['vistas_unicas'],
-      text='{} Vistas Únicas'.format(data[-1]['vistas_unicas']),
+      text='{} Vistas'.format(data[-1]['vistas_unicas']),
       font=dict(color='white'),
       bgcolor='#1f77b4',
       borderpad=2,
@@ -193,11 +190,6 @@ def callbacks (app):
     fig['layout']['annotations'] = annotations
 
     fig['layout']['height'] = 600
-
-    # fig['layout']['xaxis'] = dict(
-    #   showgrid=False,
-    #   showticklabels=False
-    # )
 
     return fig
 
