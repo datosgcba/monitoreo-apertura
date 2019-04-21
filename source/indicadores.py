@@ -56,19 +56,6 @@ def crearIndicadores(db):
     {"$sort": {"_id.fecha": 1}}
   ]))
 
-  # indicadores['busquedas'] = list(db['busquedas'].aggregate([
-  #   {"$sort": {"_id": -1}},
-  #   {"$limit": 120},
-  #   {"$group": {
-  #     "_id": {
-  #       "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
-  #       "query": "$query"
-  #     },
-  #     "vistas_totales": {"$sum": "$vistas_totales"},
-  #     "vistas_unicas": {"$sum": "$vistas_unicas"}
-  #   }}
-  # ]))
-
   indicadores['datasets_por_frecuencia'] = list(db['data-json'].aggregate([
     {"$sort": {"_id": -1}},
     {"$limit": 1},
@@ -95,20 +82,30 @@ def crearIndicadores(db):
     }},
     {"$sort": {"recursos": 1}}
   ]))
+  
+  indicadores['busquedas'] = list(db['busquedas'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 7},
+    {"$group": {
+      "_id": {
+        "query": "$query"
+      },
+      "vistas": {"$sum": "$vistas_unicas"}
+    }}
+  ]))
 
-  # indicadores['datasets_por_keyword'] = list(db['data-json'].aggregate([
-  #   {"$sort": {"_id": -1}},
-  #   {"$limit": 1},
-  #   {"$unwind": "$dataset"},
-  #   {"$unwind": "$dataset.keyword"},
-  #   {"$group": {
-  #     "_id": {
-  #       "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
-  #       "keyword": "$dataset.keyword"
-  #     },
-  #     "datasets": {"$sum": 1},
-  #   }}
-  # ]))
+  indicadores['datasets_por_keyword'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$unwind": "$dataset.keyword"},
+    {"$group": {
+      "_id": {
+        "keyword": "$dataset.keyword"
+      },
+      "datasets": {"$sum": 1},
+    }}
+  ]))
 
   indicadores['datasets_por_publicador'] = list(db['data-json'].aggregate([
     {"$sort": {"_id": -1}},
