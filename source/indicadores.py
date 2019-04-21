@@ -69,32 +69,32 @@ def crearIndicadores(db):
   #   }}
   # ]))
 
-  # indicadores['datasets_por_frecuencia'] = list(db['data-json'].aggregate([
-  #   {"$sort": {"_id": -1}},
-  #   {"$limit": 1},
-  #   {"$unwind": "$dataset"},
-  #   {"$group": {
-  #     "_id": {
-  #       "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
-  #       "frecuencia": "$dataset.accrualPeriodicity"
-  #     },
-  #     "datasets": {"$sum": 1}
-  #   }}
-  # ]))
+  indicadores['datasets_por_frecuencia'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "frecuencia": "$dataset.accrualPeriodicity"
+      },
+      "datasets": {"$sum": 1}
+    }},
+    {"$sort": {"datasets": 1}}
+  ]))
 
-  # indicadores['recursos_por_formato'] = list(db['data-json'].aggregate([
-  #   {"$sort": {"_id": -1}},
-  #   {"$limit": 1},
-  #   {"$unwind": "$dataset"},
-  #   {"$unwind": "$dataset.distribution"},
-  #   {"$group": {
-  #     "_id": {
-  #       "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
-  #       "formato": "$dataset.distribution.format"
-  #     },
-  #     "recursos": {"$sum": 1},
-  #   }}
-  # ]))
+  indicadores['recursos_por_formato'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$unwind": "$dataset.distribution"},
+    {"$group": {
+      "_id": {
+        "formato": "$dataset.distribution.format"
+      },
+      "recursos": {"$sum": 1},
+    }},
+    {"$sort": {"recursos": 1}}
+  ]))
 
   # indicadores['datasets_por_keyword'] = list(db['data-json'].aggregate([
   #   {"$sort": {"_id": -1}},
@@ -110,31 +110,45 @@ def crearIndicadores(db):
   #   }}
   # ]))
 
-  # indicadores['datasets_por_publicador'] = list(db['data-json'].aggregate([
-  #   {"$sort": {"_id": -1}},
-  #   {"$limit": 1},
-  #   {"$unwind": "$dataset"},
-  #   {"$group": {
-  #     "_id": {
-  #       "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
-  #       "publicador": "$dataset.publisher.name"
-  #     },
-  #     "datasets": {"$sum": 1},
-  #   }}
-  # ]))
+  indicadores['datasets_por_publicador'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "publicador": "$dataset.publisher.name"
+      },
+      "datasets": {"$sum": 1},
+    }},
+    {"$sort": {"datasets": 1}}
+  ]))
 
-  # indicadores['datasets_por_fuente'] = list(db['data-json'].aggregate([
-  #   {"$sort": {"_id": -1}},
-  #   {"$limit": 1},
-  #   {"$unwind": "$dataset"},
-  #   {"$group": {
-  #     "_id": {
-  #       "fecha": { "$dateToString": { "format": "%Y-%m-%d", "date": "$fecha" } },
-  #       "fuente": "$dataset.source"
-  #     },
-  #     "datasets": {"$sum": 1},
-  #   }}
-  # ]))
+  indicadores['datasets_por_publicador_organizacion'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "publicador": "$dataset.publisher.name",
+        "organizacion": { "$arrayElemAt": [{ "$split": ["$dataset.source", "."] }, 0] }
+      },
+      "datasets": {"$sum": 1},
+    }},
+    {"$sort": {"datasets": 1}}
+  ]))
+
+  indicadores['datasets_por_fuente'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "fuente": "$dataset.source"
+      },
+      "datasets": {"$sum": 1},
+    }},
+    {"$sort": {"datasets": 1}}
+  ]))
 
   indicadores['datasets'] = list(db['data-json'].aggregate([
     {"$sort": {"_id": -1}},

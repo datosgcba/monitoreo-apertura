@@ -10,7 +10,7 @@ from werkzeug.contrib.cache import FileSystemCache
 
 cache = FileSystemCache(cache_dir="./.cache")
 
-frecuencias = {
+dias_frecuencias = {
   "R/P10Y": 360 * 10,
   "R/P4Y": 360 * 4,
   "R/P3Y": 360 * 3,
@@ -126,56 +126,75 @@ def layout(pathname):
 
   fig_lineas['layout']['height'] = 600
 
+  lineas_organizacion = dcc.Graph(figure=fig_lineas)
+
   # ==============================
   #      Barras de publicador
   # ==============================
   datasets = [x for x in indicadores['datasets'] if x['organizacion'] == organizacion]
-  publicadores = [(k, len(list(v))) for k,v in groupby(datasets, key=lambda x:x['publicador'])]
-  desactualizados = [len([x for x in list(v) if x['dias'] > frecuencias[x['frecuencia']]]) for k,v in groupby(datasets, key=lambda x:x['publicador'])]
 
-  datasets_total = go.Bar(
-    y=[x[0] for x in publicadores],
-    x=[x[1] for x in publicadores],
-    name='Datasets',
-    orientation = 'h',
-    marker = dict(color='#1f77b4')
+
+  # ==============================
+  #     Barras por publicador
+  # ==============================
+  publicadores = [x for x in indicadores['datasets_por_publicador_organizacion'] if x['_id']['organizacion'] == organizacion]
+
+  barras_publicador = dcc.Graph(
+    figure=go.Figure(
+      data=[go.Bar(
+        y=[x['_id']['publicador'] for x in publicadores],
+        x=[x['datasets'] for x in publicadores],
+        orientation = 'h'
+      )],
+      layout=go.Layout(
+        yaxis=dict(automargin=True)
+      )
+    )
   )
 
-  datasets_desactualizados = go.Bar(
-    y=[x[0] for x in publicadores],
-    x=[x for x in desactualizados],
-    name='Datasets desactualizados',
-    orientation = 'h',
-    marker = dict(color='#d62728')
+  # ==============================
+  #    Torta por actualización
+  # ==============================
+  actualizados = len([x for x in datasets if x['dias'] <= dias_frecuencias[x['frecuencia']]])
+  desactualizados = len([x for x in datasets if x['dias'] > dias_frecuencias[x['frecuencia']]])
+
+  torta_actualizacion = dcc.Graph(
+    id='graph',
+    figure={
+      'data': [{
+        'values': [actualizados, desactualizados],
+        'labels': ['Actualizados', 'Desactualizados'],
+        'type': 'pie',
+      }]
+    }
   )
 
-  data = [datasets_desactualizados, datasets_total]
-
-  layout = go.Layout(
-    barmode='stack',
-    yaxis=dict(automargin=True)
-  )
-
-  fig_barras = go.Figure(data=data, layout=layout)
+  # ==============================
+  #        Tabla Datasets
+  # ==============================
   datasets = [{
-        'Titulo': d['titulo'],
-        'Frecuencia de actualización': d['frecuencia'],
-        'Días desactualizado': int(d['dias']),
-        'Fuente': d['fuente'],
-        'Publicador': d['publicador'],
-        'URL de descarga': d['url']
-      } for d in datasets]
+    'Titulo': d['titulo'],
+    'Frecuencia de actualización': d['frecuencia'],
+    'Días desactualizado': int(d['dias']),
+    'Fuente': d['fuente'],
+    'Publicador': d['publicador'],
+    'URL de descarga': d['url']
+  } for d in datasets]
+
+  tabla_datasets = dash_table.DataTable(
+    id='table',
+    columns=[{"name": i, "id": i} for i in datasets[0].keys()],
+    data=datasets,
+    style_table={'overflowX': 'scroll'}
+  )
 
   return html.Div([
     html.H2(organizacion, className='text-center'),
-    dcc.Graph(figure=fig_lineas),
+    lineas_organizacion,
     html.H3('Publicadores', className='text-center'),
-    dcc.Graph(figure=fig_barras),
+    barras_publicador,
+    html.H3('Actualización', className='text-center'),
+    torta_actualizacion,
     html.H3('Datasets', className='text-center'),
-    dash_table.DataTable(
-      id='table',
-      columns=[{"name": i, "id": i} for i in datasets[0].keys()],
-      data=datasets,
-      style_table={'overflowX': 'scroll'}
-    )
+    tabla_datasets
   ])

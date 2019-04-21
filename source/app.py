@@ -7,7 +7,7 @@ import dash_html_components as html
 from multiprocessing import Process
 from dash.dependencies import Input, Output
 from werkzeug.contrib.cache import FileSystemCache
-from tableros import general, datosabiertos, organizacion
+from tableros import general, badata, organizacion
 
 cache = FileSystemCache(cache_dir="./.cache")
 
@@ -35,7 +35,7 @@ def display_page(pathname):
     return general.layout()
 
   if(pathname == "/badata"):
-    return datosabiertos.layout()
+    return badata.layout()
 
   if(pathname.replace("/", "") in [urllib.parse.quote(org) for org in set([x['_id']['organizacion'] for x in indicadores['por_organizacion']])]):
     return organizacion.layout(pathname)
