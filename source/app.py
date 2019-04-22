@@ -44,4 +44,4 @@ def display_page(pathname):
 
 general.callbacks(app)
 
-app.run_server(port=8080, host='0.0.0.0', debug=True)
+app.run_server(port=8080, host='0.0.0.0')
