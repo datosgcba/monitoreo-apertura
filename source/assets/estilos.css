@@ -77,21 +77,11 @@ body{
   flex-grow: 2!important;
 }
 
-#datos-linea h5 {
+#linea-titulo {
   text-align: center;
   font-family: "OpenSans", Helvetica, Arial, sans-serif !important;
   font-weight: 700;
   color: #676767;
   text-transform: capitalize;
   font-size: 20px;
-}
-
-#datos-linea div {
-  display: flex;
-  justify-content: center;
-}
-
-#datos-linea p {
-  margin: 0px 10px;
-  font-size: 15px;
 }

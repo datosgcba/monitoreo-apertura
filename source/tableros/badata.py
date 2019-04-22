@@ -1,4 +1,7 @@
+import base64
+import textwrap
 import dash_table
+from io import BytesIO
 from itertools import groupby
 import plotly.graph_objs as go
 from wordcloud import WordCloud
@@ -6,10 +9,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from tableros.organizacion import dias_frecuencias
 from werkzeug.contrib.cache import FileSystemCache
-import base64
-from io import BytesIO
 
-import textwrap
 
 
 cache = FileSystemCache(cache_dir="./.cache")
@@ -178,7 +178,7 @@ def layout():
         barras_formatos,
       ], className='col-xs-4 text-center'),
     ], className='row'),
-    html.H3('Top 10 desactualizados', className='text-center'),
+    html.H3('Top 10 datasets desactualizados', className='text-center'),
     tabla_datasets,
     html.Div([
       html.Div([

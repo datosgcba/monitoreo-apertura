@@ -34,6 +34,7 @@ def layout():
         clickData={'points': [{'customdata': 'totales'}]}
       ),
       html.Div([
+        html.H5(id='linea-titulo'),
         dcc.Graph(id='lineas-de-tiempo'),
         html.Div(id='org-link', className='text-center')
       ])

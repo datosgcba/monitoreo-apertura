@@ -1,4 +1,5 @@
 import urllib
+import textwrap
 import dash_table
 from plotly import tools
 from itertools import groupby
@@ -138,18 +139,28 @@ def layout(pathname):
   #     Barras por publicador
   # ==============================
   publicadores = [x for x in indicadores['datasets_por_publicador_organizacion'] if x['_id']['organizacion'] == organizacion]
+  publicadores_yaxis = []
+  for x in publicadores:
+    publicadores_yaxis.append('<br>'.join(textwrap.wrap(x['_id']['publicador'], width=100)))
 
   barras_publicador = dcc.Graph(
     figure=go.Figure(
       data=[go.Bar(
-        y=[x['_id']['publicador'] for x in publicadores],
+        y=publicadores_yaxis,
         x=[x['datasets'] for x in publicadores],
-        orientation = 'h'
+        orientation = 'h',
       )],
       layout=go.Layout(
-        yaxis=dict(automargin=True)
+        height=3000,
+        margin=go.layout.Margin(
+          l=600
+        ),
+        yaxis={
+          'categoryorder': 'array',
+          'categoryarray': publicadores_yaxis
+        }
       )
-    )
+    ),
   )
 
   # ==============================
@@ -190,11 +201,17 @@ def layout(pathname):
 
   return html.Div([
     html.H2(organizacion, className='text-center'),
-    lineas_organizacion,
-    html.H3('Publicadores', className='text-center'),
-    barras_publicador,
-    html.H3('Actualización', className='text-center'),
-    torta_actualizacion,
+    html.Div([
+      html.Div([
+        lineas_organizacion,
+      ], className='col-xs-8 text-center'),
+      html.Div([
+        html.H3('Actualización', className='text-center'),
+        torta_actualizacion,
+      ], className='col-xs-4 text-center')
+    ], className='row'),
     html.H3('Datasets', className='text-center'),
-    tabla_datasets
+    tabla_datasets,
+    html.H3('Publicadores', className='text-center'),
+    barras_publicador
   ])
