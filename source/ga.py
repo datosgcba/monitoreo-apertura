@@ -6,7 +6,7 @@ import datetime
 from apiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
-config = yaml.full_load(open("../config.yml", 'r'))
+config = yaml.full_load(open("./config.yml", 'r'))
 
 def getGaData():
   profile_id = None
