@@ -12,7 +12,7 @@ db = connection['monitoreo-apertura']
 fecha = datetime.datetime.utcnow()
 ga_data = getGaData()
 
-data_json = requests.get(config['archivos']['data_json']).json()
+data_json = requests.get(config['data_json']).json()
 
 for dataset in data_json['dataset']:
   dataset['modified'] = datetime.datetime.strptime(dataset['modified'], '%Y-%m-%dT%H:%M:%S.%f')

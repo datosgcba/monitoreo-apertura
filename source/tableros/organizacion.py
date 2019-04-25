@@ -49,9 +49,9 @@ def layout(pathname):
     rows=3,
     cols=1,
     specs=[[{}], [{}], [{}]],
-    shared_xaxes=True,
     shared_yaxes=True,
-    vertical_spacing=0.1
+    vertical_spacing=0.1,
+    print_grid=False
   )
 
   # Datasets

@@ -42,9 +42,13 @@ def layout():
   ])
 
 def callbacks (app):
+  # ==============================
+  #          Reset lineas
+  # ==============================
   @app.callback(Output('bubble', 'clickData'), [Input('tabs', 'value')])
   def render_content(tab):
     return {'points': [{'customdata': 'totales'}]}
+
   # ==============================
   #            Burbujas
   # ==============================
@@ -114,9 +118,9 @@ def callbacks (app):
       rows=3,
       cols=1,
       specs=[[{}], [{}], [{}]],
-      shared_xaxes=True,
       shared_yaxes=True,
-      vertical_spacing=0.1
+      vertical_spacing=0.1,
+      print_grid=False
     )
 
     # Datasets
