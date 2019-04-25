@@ -1,15 +1,13 @@
 # coding=utf-8
 import dash
 import cron
+import json
 import urllib
 import dash_core_components as dcc
 import dash_html_components as html
 from multiprocessing import Process
 from dash.dependencies import Input, Output
-from werkzeug.contrib.cache import FileSystemCache
 from tableros import general, badata, organizacion
-
-cache = FileSystemCache(cache_dir="./.cache")
 
 Process(target=cron.run).start()
 cron.job()
@@ -29,7 +27,7 @@ app.layout = html.Div([
 # ==============================
 @app.callback(dash.dependencies.Output('page-content', 'children'), [dash.dependencies.Input('url', 'pathname')])
 def display_page(pathname):
-  indicadores = cache.get('indicadores')
+  indicadores = json.load(open('indicadores.json'))
 
   if(pathname == "/" or not pathname):
     return general.layout()
@@ -44,4 +42,4 @@ def display_page(pathname):
 
 general.callbacks(app)
 
-app.run_server(port=8080, host='0.0.0.0')
+app.run_server(port=8080, host='0.0.0.0', debug=True)

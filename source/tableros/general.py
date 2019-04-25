@@ -1,5 +1,6 @@
 # coding=utf-8
 import dash
+import json
 import urllib
 import datetime
 from plotly import tools
@@ -7,7 +8,6 @@ import plotly.graph_objs as go
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
-from werkzeug.contrib.cache import FileSystemCache
 
 def diasDesdeHoy(num):
   fechas = []
@@ -19,8 +19,6 @@ def diasDesdeHoy(num):
     dt -= step
 
   return fechas[::-1]
-
-cache = FileSystemCache(cache_dir="./.cache")
 
 def layout():
   return html.Div([
@@ -54,9 +52,7 @@ def callbacks (app):
   # ==============================
   @app.callback(Output('bubble', 'figure'), [Input('tabs', 'value')])
   def render_content(tab):
-    indicadores = cache.get('indicadores')
-    if not indicadores:
-      return
+    indicadores = json.load(open('indicadores.json'))
     por_tab = indicadores["por_organizacion" if tab == 'org' else "por_categoria"]
     sizeref = 2.*(max([x['vistas_unicas'] for x in por_tab]))/(70**2)
 
@@ -103,7 +99,7 @@ def callbacks (app):
   # ==============================
   @app.callback(Output('lineas-de-tiempo', 'figure'), [Input('bubble', 'clickData')], [State('tabs', 'value')])
   def render_content(clickData, tab):
-    indicadores = cache.get('indicadores')
+    indicadores = json.load(open('indicadores.json'))
     por_tab = indicadores["por_organizacion" if tab == 'org' else "por_categoria"]
     annotations = []
 

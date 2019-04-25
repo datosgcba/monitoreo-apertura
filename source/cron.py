@@ -1,15 +1,14 @@
 # coding=utf-8
 import yaml
 import time
+import json
 import datetime
 import schedule
 import requests
 import indicadores
 from pymongo import MongoClient
-from werkzeug.contrib.cache import FileSystemCache
 from ga import updateDatajson, getBusquedas, getGaData
 
-cache = FileSystemCache(cache_dir="./.cache")
 config = yaml.full_load(open("./config.yml", 'r'))
 connection = MongoClient(config['mongo_url'])
 db = connection['monitoreo-apertura']
@@ -34,8 +33,9 @@ def job ():
   data_json = updateDatajson(ga_data, data_json)
   
   db['data-json'].insert_one(data_json)
-  
-  cache.set('indicadores', indicadores.crearIndicadores(db))
+
+  with open('indicadores.json', 'w') as outfile:  
+    json.dump(indicadores.crearIndicadores(db), outfile)
 
 def run ():
   schedule.every().day.at("00:00").do(job)

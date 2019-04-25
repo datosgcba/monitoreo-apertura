@@ -1,3 +1,4 @@
+import json
 import base64
 import textwrap
 import dash_table
@@ -8,14 +9,9 @@ from wordcloud import WordCloud
 import dash_core_components as dcc
 import dash_html_components as html
 from tableros.organizacion import dias_frecuencias
-from werkzeug.contrib.cache import FileSystemCache
-
-
-
-cache = FileSystemCache(cache_dir="./.cache")
 
 def layout():
-  indicadores = cache.get('indicadores')
+  indicadores = json.load(open('indicadores.json'))
   datasets = indicadores['datasets']
 
   # ==============================

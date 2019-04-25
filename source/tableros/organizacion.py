@@ -1,3 +1,4 @@
+import json
 import urllib
 import textwrap
 import dash_table
@@ -7,9 +8,6 @@ import plotly.graph_objs as go
 import dash_core_components as dcc
 import dash_html_components as html
 from tableros.general import diasDesdeHoy
-from werkzeug.contrib.cache import FileSystemCache
-
-cache = FileSystemCache(cache_dir="./.cache")
 
 dias_frecuencias = {
   "R/P10Y": 360 * 10,
@@ -34,7 +32,7 @@ dias_frecuencias = {
 }
 
 def layout(pathname):
-  indicadores = cache.get('indicadores')
+  indicadores = json.load(open('indicadores.json'))
   organizacion = urllib.parse.unquote(pathname.replace("/", ""))
 
   # ==============================

@@ -2,4 +2,3 @@ __pycache__
 *.pyc
 config.yml
 app.yaml
-.cache
