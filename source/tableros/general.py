@@ -53,7 +53,7 @@ def callbacks (app):
   @app.callback(Output('bubble', 'figure'), [Input('tabs', 'value')])
   def render_content(tab):
     indicadores = json.load(open('indicadores.json'))
-    por_tab = indicadores["por_organizacion" if tab == 'org' else "por_categoria"]
+    por_tab = indicadores["por_organizacion_ultimo" if tab == 'org' else "por_categoria_ultimo"]
     sizeref = 2.*(max([x['vistas_unicas'] for x in por_tab]))/(70**2)
 
     return dict(

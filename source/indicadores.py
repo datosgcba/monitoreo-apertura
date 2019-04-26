@@ -38,6 +38,22 @@ def crearIndicadores(db):
     {"$sort": {"_id.fecha": 1}}
   ]))
 
+  indicadores['por_organizacion_ultimo'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "organizacion": { "$arrayElemAt": [{ "$split": ["$dataset.source", "."] }, 0] }
+      },
+      "datasets": {"$sum": 1},
+      "recursos": {"$sum": { "$size": "$dataset.distribution" }},
+      "vistas_totales": {"$sum": "$dataset.vistas.totales"},
+      "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
+      "publicador": {"$addToSet": "$dataset.publisher.name"}
+    }}
+  ]))
+
   indicadores['por_categoria'] = list(db['data-json'].aggregate([
     {"$sort": {"_id": -1}},
     {"$limit": 120},
@@ -54,6 +70,22 @@ def crearIndicadores(db):
       "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
     }},
     {"$sort": {"_id.fecha": 1}}
+  ]))
+
+  indicadores['por_categoria_ultimo'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$unwind": "$dataset.theme"},
+    {"$group": {
+      "_id": {
+        "categoria": "$dataset.theme"
+      },
+      "datasets": {"$sum": 1},
+      "recursos": {"$sum": { "$size": "$dataset.distribution" }},
+      "vistas_totales": {"$sum": "$dataset.vistas.totales"},
+      "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
+    }}
   ]))
 
   indicadores['datasets_por_frecuencia'] = list(db['data-json'].aggregate([
