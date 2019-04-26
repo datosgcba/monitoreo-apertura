@@ -221,7 +221,7 @@ def crearIndicadores(db):
       "organizacion": { "$arrayElemAt": [{ "$split": ["$dataset.source", "."] }, 0] },
       "url": "$dataset.landingPage",
       "publicador": "$dataset.publisher.name",
-      "fuente": "$dataset.publisher.name",
+      "fuente": "$dataset.source",
       "titulo": "$dataset.title"
     }}
   ]))

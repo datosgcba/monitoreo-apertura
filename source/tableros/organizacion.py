@@ -34,6 +34,7 @@ dias_frecuencias = {
 def layout(pathname):
   indicadores = json.load(open('indicadores.json'))
   organizacion = urllib.parse.unquote(pathname.replace("/", ""))
+  datasets = [x for x in indicadores['datasets'] if x['organizacion'] == organizacion]
 
   # ==============================
   #        Lineas de tiempo
@@ -128,12 +129,6 @@ def layout(pathname):
   lineas_organizacion = dcc.Graph(figure=fig_lineas)
 
   # ==============================
-  #      Barras de publicador
-  # ==============================
-  datasets = [x for x in indicadores['datasets'] if x['organizacion'] == organizacion]
-
-
-  # ==============================
   #     Barras por publicador
   # ==============================
   publicadores = [x for x in indicadores['datasets_por_publicador_organizacion'] if x['_id']['organizacion'] == organizacion]
@@ -186,8 +181,7 @@ def layout(pathname):
     'Frecuencia de actualización': d['frecuencia'],
     'Días desactualizado': int(d['dias']),
     'Fuente': d['fuente'],
-    'Publicador': d['publicador'],
-    'URL de descarga': d['url']
+    'Publicador': d['publicador']
   } for d in datasets]
 
   tabla_datasets = dash_table.DataTable(
