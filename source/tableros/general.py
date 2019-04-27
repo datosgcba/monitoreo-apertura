@@ -114,7 +114,7 @@ def callbacks (app):
       rows=3,
       cols=1,
       specs=[[{}], [{}], [{}]],
-      shared_yaxes=True,
+      shared_xaxes=True,
       vertical_spacing=0.1,
       print_grid=False
     )

@@ -3,6 +3,7 @@ import yaml
 import urllib
 import requests
 import datetime
+import pandas as pd
 from apiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -64,7 +65,9 @@ def getBusquedas (ga_data, fecha):
   return busquedas
 
 def updateDatajson(ga_data, data_json):
-  ga_data_datasets = [ [urllib.parse.urlparse('https://data.buenosaires.gob.ar{}'.format(row[0])).path.split('/')[2], row[1], row[2]] for row in ga_data if 'dataset/' in row[0] ]
+  ga_data_datasets = pd.DataFrame([ [urllib.parse.urlparse('https://data.buenosaires.gob.ar{}'.format(row[0])).path.split('/')[2], row[1], row[2]] for row in ga_data if 'dataset/' in row[0] ], columns=['dataset', 'vistas_totales', 'vistas_unicas'], dtype=int)
+  ga_data_datasets = ga_data_datasets.groupby(['dataset']).sum()
+  ga_data_datasets_usados = []
 
   for i, dataset in enumerate(data_json['dataset']):
     vistas = { 'totales': 0, 'unicas': 0 }
@@ -73,12 +76,12 @@ def updateDatajson(ga_data, data_json):
     urls = [ urllib.parse.urlparse(url) for url in urls ]
     urls = [ url.path.split('/')[2] for url in urls if url.hostname == 'data.buenosaires.gob.ar']
 
-    for i_ga_row, ga_row in enumerate(ga_data_datasets):
+    for ga_data_dataset in ga_data_datasets.iterrows():
       for url in urls:
-        if url == ga_row[0]:
-          vistas['totales'] += int(ga_row[1])
-          vistas['unicas'] += int(ga_row[2])
-          ga_data_datasets[i_ga_row][0] = ''
+        if url == ga_data_dataset[0] and ga_data_dataset[0] not in ga_data_datasets_usados:
+          vistas['totales'] += int(ga_data_dataset[1][0])
+          vistas['unicas'] += int(ga_data_dataset[1][1])
+          ga_data_datasets_usados.append(ga_data_dataset[0])
 
     data_json['dataset'][i]['vistas'] = vistas
 

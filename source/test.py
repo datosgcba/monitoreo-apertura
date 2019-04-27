@@ -5,7 +5,7 @@ import requests
 from pymongo import MongoClient
 from ga import updateDatajson, getBusquedas, getGaData
 
-config = yaml.full_load(open("../config.yml", 'r'))
+config = yaml.full_load(open("./config.yml", 'r'))
 connection = MongoClient(config['mongo_url'])
 db = connection['monitoreo-apertura']
 
@@ -22,8 +22,8 @@ for dataset in data_json['dataset']:
     
 data_json = updateDatajson(ga_data, data_json)
 
-dt = datetime.datetime(2018, 4, 16)
-end = datetime.datetime(2019, 4, 16)
+end = datetime.datetime.utcnow()
+dt = end - datetime.timedelta(days=120)
 step = datetime.timedelta(days=1)
 
 while dt < end:
