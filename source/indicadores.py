@@ -1,90 +1,229 @@
-# coding=utf-8 
+# coding=utf-8
 import datetime
-import unidecode
-import pandas as pd
-from collections import Counter
 
-def normalizarNombreColumna (string):
-  return "_".join([ "".join(list(filter(str.isalnum, s))) for s in unidecode.unidecode(string.lower().replace(' ', '_').replace('-', '_')).split('_') ])
-
-def normalizarNombrePathDataset (path):
-  if '?' in path:
-    path = path.split('?')[0]
-  if path.endswith('/'):
-    path = path[:-1]
-  path = path.split('/')[-1]
-  return path
-
-def armarIndicadoresGa (ga_datasets, org_cat_dataset):
-  views_by_categoria = {}
-  views_by_org = {}
-  ga_datasets_dict = { normalizarNombrePathDataset(x[0]): x[1] for x in ga_datasets['rows'] }
-  
-  for (dataset, org, categorias) in org_cat_dataset:
-    org = normalizarNombreColumna('vistas_organizacion_{}'.format(org))
-    categorias = [ normalizarNombreColumna('vistas_categoria_{}'.format(cat)) for cat in categorias ]
-    if dataset in ga_datasets_dict.keys():
-      views = int(ga_datasets_dict[dataset])
-      if org in views_by_org.keys():
-        views_by_org[org] += views
-      else:
-        views_by_org[org] = views
-      
-      for categoria in categorias:
-        if categoria in views_by_categoria.keys():
-          views_by_categoria[categoria] += views
-        else:
-          views_by_categoria[categoria] = views
-
-  full_dict = {}
-  full_dict.update(views_by_categoria)
-  full_dict.update(views_by_org)
-  
-  return full_dict
-
-def calcular (data_json, ga_metricas):
+def crearIndicadores(db):
   indicadores = {}
 
-  # Fecha actual
-  indicadores['fecha'] = datetime.datetime.now().strftime('%d/%m/%Y:%H:%M:%S')
+  indicadores['por_totales'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 120},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "fecha": { "$divide": [{"$subtract":[datetime.datetime.utcnow(), "$fecha"]}, 1000 * 60 * 60 * 24] }
+      },
+      "datasets": {"$sum": 1},
+      "recursos": {"$sum": { "$size": "$dataset.distribution" }},
+      "vistas_totales": {"$sum": "$dataset.vistas.totales"},
+      "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
+    }},
+    {"$sort": {"_id.fecha": 1}}
+  ]))
 
-  # Cantidad de Datasets
-  indicadores['cantidad_datasets'] = len(data_json["dataset"])
+  indicadores['por_organizacion'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 120},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "fecha": { "$divide": [{"$subtract":[datetime.datetime.utcnow(), "$fecha"]}, 1000 * 60 * 60 * 24] },
+        "organizacion": { "$arrayElemAt": [{ "$split": ["$dataset.source", "."] }, 0] }
+      },
+      "datasets": {"$sum": 1},
+      "recursos": {"$sum": { "$size": "$dataset.distribution" }},
+      "vistas_totales": {"$sum": "$dataset.vistas.totales"},
+      "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
+      "publicador": {"$addToSet": "$dataset.publisher.name"}
+    }},
+    {"$sort": {"_id.fecha": 1}}
+  ]))
 
-  # Cantidad de Datasets por organización
-  indicadores.update(Counter([ normalizarNombreColumna('datasets_organizacion_' + dataset["source"].split(".")[0]) for dataset in data_json["dataset"] ]))
+  indicadores['por_organizacion_ultimo'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "organizacion": { "$arrayElemAt": [{ "$split": ["$dataset.source", "."] }, 0] }
+      },
+      "datasets": {"$sum": 1},
+      "recursos": {"$sum": { "$size": "$dataset.distribution" }},
+      "vistas_totales": {"$sum": "$dataset.vistas.totales"},
+      "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
+      "publicador": {"$addToSet": "$dataset.publisher.name"}
+    }}
+  ]))
 
-  # Cantidad de Datasets por categoría
-  indicadores.update(Counter([ normalizarNombreColumna("datasets_categoria_" + theme) for dataset in data_json["dataset"] for theme in dataset["theme"] ]))
+  indicadores['por_categoria'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 120},
+    {"$unwind": "$dataset"},
+    {"$unwind": "$dataset.theme"},
+    {"$group": {
+      "_id": {
+        "fecha": { "$divide": [{"$subtract":[datetime.datetime.utcnow(), "$fecha"]}, 1000 * 60 * 60 * 24] },
+        "categoria": "$dataset.theme"
+      },
+      "datasets": {"$sum": 1},
+      "recursos": {"$sum": { "$size": "$dataset.distribution" }},
+      "vistas_totales": {"$sum": "$dataset.vistas.totales"},
+      "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
+    }},
+    {"$sort": {"_id.fecha": 1}}
+  ]))
 
-  # Cantidad de Recursos
-  indicadores['cantidad_recursos'] = sum([ len(dataset["distribution"]) for dataset in data_json["dataset"] ])
+  indicadores['por_categoria_ultimo'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$unwind": "$dataset.theme"},
+    {"$group": {
+      "_id": {
+        "categoria": "$dataset.theme"
+      },
+      "datasets": {"$sum": 1},
+      "recursos": {"$sum": { "$size": "$dataset.distribution" }},
+      "vistas_totales": {"$sum": "$dataset.vistas.totales"},
+      "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
+    }}
+  ]))
 
-  # Cantidad de Recursos por organización
-  cantidad_recursos_org = {}
-  recursos_por_datasets_org = [ ( normalizarNombreColumna("recursos_organizacion_" + dataset["source"].split(".")[0]), len(dataset["distribution"]) ) for dataset in data_json["dataset"] ]
-  for recurso_por_dataset in recursos_por_datasets_org:
-    if recurso_por_dataset[0] in cantidad_recursos_org:
-      cantidad_recursos_org[recurso_por_dataset[0]] += recurso_por_dataset[1]
-    else: 
-      cantidad_recursos_org[recurso_por_dataset[0]] = recurso_por_dataset[1]
-  indicadores.update(cantidad_recursos_org)
+  indicadores['datasets_por_frecuencia'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "frecuencia": "$dataset.accrualPeriodicity"
+      },
+      "datasets": {"$sum": 1}
+    }},
+    {"$sort": {"datasets": 1}}
+  ]))
 
-  # Cantidad de Recursos por categoría
-  cantidad_recursos_cat = {}
-  recursos_por_datasets_cat = [ ( normalizarNombreColumna("recursos_categoria_" + theme), len(dataset["distribution"]) ) for dataset in data_json["dataset"] for theme in dataset["theme"] ]
-  for recurso_por_dataset in recursos_por_datasets_cat:
-    if recurso_por_dataset[0] in cantidad_recursos_cat:
-      cantidad_recursos_cat[recurso_por_dataset[0]] += recurso_por_dataset[1]
-    else: 
-      cantidad_recursos_cat[recurso_por_dataset[0]] = recurso_por_dataset[1]
-  indicadores.update(cantidad_recursos_cat)
+  indicadores['recursos_por_formato'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$unwind": "$dataset.distribution"},
+    {"$group": {
+      "_id": {
+        "formato": "$dataset.distribution.format"
+      },
+      "recursos": {"$sum": 1},
+    }},
+    {"$sort": {"recursos": 1}}
+  ]))
+  
+  indicadores['busquedas'] = list(db['busquedas'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 7},
+    {"$group": {
+      "_id": {
+        "query": "$query"
+      },
+      "vistas": {"$sum": "$vistas_unicas"}
+    }}
+  ]))
 
-  # Metricas Google Analytics
-  ga_indicadores = armarIndicadoresGa(ga_metricas['ga_datasets'], [ (normalizarNombrePathDataset(dataset['landingPage']), dataset["source"].split(".")[0], dataset["theme"]) for dataset in data_json["dataset"] ])
-  indicadores.update(ga_indicadores)
+  indicadores['datasets_por_keyword'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$unwind": "$dataset.keyword"},
+    {"$group": {
+      "_id": {
+        "keyword": "$dataset.keyword"
+      },
+      "datasets": {"$sum": 1},
+    }}
+  ]))
 
-  indicadores['vistas_totales'] = ga_metricas['ga_totales']['totalsForAllResults']['ga:pageviews']
-  indicadores['vistas_totales_unicas'] = ga_metricas['ga_totales']['totalsForAllResults']['ga:uniquePageviews']
+  indicadores['datasets_por_publicador'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "publicador": "$dataset.publisher.name"
+      },
+      "datasets": {"$sum": 1},
+    }},
+    {"$sort": {"datasets": 1}}
+  ]))
+
+  indicadores['datasets_por_publicador_organizacion'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "publicador": "$dataset.publisher.name",
+        "organizacion": { "$arrayElemAt": [{ "$split": ["$dataset.source", "."] }, 0] }
+      },
+      "datasets": {"$sum": 1},
+    }},
+    {"$sort": {"datasets": 1}}
+  ]))
+
+  indicadores['datasets_por_fuente'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$group": {
+      "_id": {
+        "fuente": "$dataset.source"
+      },
+      "datasets": {"$sum": 1},
+    }},
+    {"$sort": {"datasets": 1}}
+  ]))
+
+  indicadores['datasets'] = list(db['data-json'].aggregate([
+    {"$sort": {"_id": -1}},
+    {"$limit": 1},
+    {"$unwind": "$dataset"},
+    {"$unwind": "$dataset.distribution"},
+    {"$sort": {"dataset.distribution.modified": 1}},
+    {"$project": {
+      "dataset": "$dataset",
+      "dias_recursos": {
+        "$divide": [
+          {"$subtract":[
+            datetime.datetime.utcnow(), "$dataset.distribution.modified"
+          ]}
+          , 1000 * 60 * 60 * 24
+        ]
+      }
+    }},
+    {"$group": {
+      "_id": {
+        "dataset": "$dataset.title"
+      },
+      "dias_recursos": {"$min": "$dias_recursos"},
+      "datasets": {"$push": "$dataset"}
+    }},
+    {"$project":{
+      "dias_recursos":"$dias_recursos",
+      "dataset": {"$arrayElemAt": ["$datasets", 0]}
+    }},
+    {"$project": {
+      "dias": {"$min":["$dias_recursos",
+        {"$divide": [
+          {"$subtract":[
+            datetime.datetime.utcnow(), 
+            "$dataset.modified"
+          ]}
+          , 1000 * 60 * 60 * 24
+        ]}
+      ]},
+      "frecuencia": "$dataset.accrualPeriodicity",
+      "organizacion": { "$arrayElemAt": [{ "$split": ["$dataset.source", "."] }, 0] },
+      "url": "$dataset.landingPage",
+      "publicador": "$dataset.publisher.name",
+      "fuente": "$dataset.source",
+      "titulo": "$dataset.title"
+    }}
+  ]))
 
   return indicadores
