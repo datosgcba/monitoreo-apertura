@@ -10,3 +10,11 @@ y este proyecto se adhiere a[Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mostrar los indicadores en un tablero usando Dash.
 - Usar FTP para almacenar archivos y CDN para leer.
 - Leer métricas de uso del portal de datos de Google Analytics.
+
+## 1.2.0 - 29-04-2019
+#### Agregado
+- Tableros de organización y de BA Data.
+- Almacenar data.json en base de datos MongoDB.
+- Calcula indicadores con agregaciones de MongoDB y guarda en archivo json local, diariamente.
+#### Eliminado
+- Uso de FTP y CDN.
