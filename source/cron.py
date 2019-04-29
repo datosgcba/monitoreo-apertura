@@ -3,6 +3,7 @@ import yaml
 import time
 import json
 import datetime
+from datetime import date
 import schedule
 import requests
 import indicadores
@@ -15,7 +16,7 @@ db = connection['monitoreo-apertura']
 
 def job ():
   hoy_desde = datetime.datetime.combine(date.today(), datetime.datetime.min.time())
-  hoy_hasta = datetime.datetime.combine(dt + datetime.timedelta(days=1), datetime.datetime.min.time())
+  hoy_hasta = datetime.datetime.combine(date.today() + datetime.timedelta(days=1), datetime.datetime.min.time())
   query = db['data-json'].find_one({ "fecha": { "$gte": hoy_desde, "$lt": hoy_hasta } })
   if(query):
     return
