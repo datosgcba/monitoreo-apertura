@@ -1,11 +1,5 @@
-ftp:
-  host: ftp.ejemplo.com
-  user: UserName
-  pass: p4$$word
-  dir: datasets/tablero-apertura
-archivos:
-  indicadores_csv: http://cdn.ejemplo.com/indicadores.csv
-  data_json: https://ejemplo.com/data.json
+data_json: "https://data.buenosaires.gob.ar/data.json"
+mongo_url: "mongodb+srv://user:pass@host/database"
 ga:
   type: service_account
   project_id: PROJECT-ID
