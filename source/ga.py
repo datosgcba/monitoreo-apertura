@@ -49,20 +49,21 @@ def getGaData():
 
   return resultado['rows']
 
-def getBusquedas (ga_data, fecha):
+def getBusquedas (ga_data, fecha, dia):
   busquedas = []
   for ga_row in ga_data:
     url = urllib.parse.urlparse('https://data.buenosaires.gob.ar{}'.format(ga_row[0]))
     url_params = urllib.parse.parse_qs(url.query)
     if ('q' in url_params.keys()):
-      try:
-        ind = [ x['query'] for x in busquedas ].index(url_params['q'])
-        busquedas[ind][1] += int(ga_row[1])
-        busquedas[ind][2] += int(ga_row[2])
-      except ValueError:
-        busquedas.append({ 'query': url_params['q'][0], 'vistas_totales': int(ga_row[1]), 'vistas_unicas': int(ga_row[2]), 'fecha': fecha })
-
-  return busquedas
+      busquedas.append({ 'query': url_params['q'][0], 'vistas_totales': int(ga_row[1]), 'vistas_unicas': int(ga_row[2]) })
+  
+  df = pd.DataFrame(busquedas).groupby(['query']).sum()
+  df['fecha'] = fecha
+  df['dia'] = dia
+  df['query'] = df.index
+  result = df.to_dict('records')
+  
+  return result
 
 def updateDatajson(ga_data, data_json):
   ga_data_datasets = pd.DataFrame([ [urllib.parse.urlparse('https://data.buenosaires.gob.ar{}'.format(row[0])).path.split('/')[2], row[1], row[2]] for row in ga_data if 'dataset/' in row[0] ], columns=['dataset', 'vistas_totales', 'vistas_unicas'], dtype=int)

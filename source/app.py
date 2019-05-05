@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 import dash
 import cron
 import json
@@ -9,8 +10,13 @@ from multiprocessing import Process
 from dash.dependencies import Input, Output
 from tableros import general, badata, organizacion
 
-Process(target=cron.run).start()
-cron.job()
+PID = str(os.getpid())
+
+def can_it_run():
+  if os.path.isfile("cron.pid"):
+    return False
+  else:
+    return True
 
 app = dash.Dash()
 template = open("template.html", "r")
@@ -48,4 +54,8 @@ def after_request(response):
     response.headers["Server"] = ""
     return response
 
-app.run_server(port=8080, host='0.0.0.0')
+if __name__ == '__main__':
+  if can_it_run():
+    Process(target=cron.run).start()
+    cron.job()
+    app.run_server(port=8080, host='0.0.0.0')
