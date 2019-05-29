@@ -3,3 +3,4 @@ __pycache__
 config.yml
 app.yaml
 indicadores.json
+*.pid
