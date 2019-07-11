@@ -41,7 +41,7 @@ def display_page(pathname):
   if(pathname == "/badata"):
     return badata.layout()
 
-  if(pathname.replace("/", "") in [urllib.parse.quote(org) for org in set([x['_id']['organizacion'] for x in indicadores['por_organizacion']])]):
+  if(pathname.replace("/", "") in [urllib.parse.quote(org) for org in set([x['_id']['organizacion'] for x in indicadores['por_organizacion'] if x['_id']['organizacion']])]):
     return organizacion.layout(pathname)
 
   return general.layout()
