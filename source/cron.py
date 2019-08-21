@@ -16,7 +16,7 @@ config = yaml.full_load(open("./config.yml", 'r'))
 
 def job ():
   open("cron.pid", 'w').write(str(os.getpid()));
-  
+
   connection = MongoClient(config['mongo_url'])
   db = connection['monitoreo-apertura']
 
@@ -42,7 +42,7 @@ def job ():
         distribution['modified'] = datetime.datetime.strptime(distribution['modified'], '%Y-%m-%dT%H:%M:%S.%f')
       
   data_json = updateDatajson(ga_data, data_json)
-  
+
   try:
     db['busquedas'].insert_many(busquedas)
     db['data-json'].insert_one(data_json)

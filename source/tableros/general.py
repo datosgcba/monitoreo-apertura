@@ -4,6 +4,7 @@ import json
 import urllib
 import datetime
 from plotly import tools
+import plotly
 import plotly.graph_objs as go
 import dash_core_components as dcc
 import dash_html_components as html
@@ -110,11 +111,11 @@ def callbacks (app):
     
     fechas = diasDesdeHoy(len(data))
 
-    fig = tools.make_subplots(
+    fig = plotly.subplots.make_subplots(
       rows=3,
       cols=1,
       specs=[[{}], [{}], [{}]],
-      shared_xaxes=True,
+      shared_xaxes=False,
       vertical_spacing=0.1,
       print_grid=False
     )

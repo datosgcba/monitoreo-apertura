@@ -10,6 +10,11 @@ import dash_core_components as dcc
 import dash_html_components as html
 from tableros.organizacion import dias_frecuencias
 
+def wrap(txt):
+  if not txt:
+    txt = ""
+  return textwrap.wrap(txt, width=100)
+
 def layout():
   indicadores = json.load(open('indicadores.json'))
   datasets = indicadores['datasets']
@@ -20,7 +25,7 @@ def layout():
   publicadores = indicadores['datasets_por_publicador']
   publicadores_yaxis = []
   for x in publicadores:
-    publicadores_yaxis.append('<br>'.join(textwrap.wrap(x['_id']['publicador'], width=100)))
+    publicadores_yaxis.append('<br>'.join(wrap(x['_id']['publicador'])))
 
   barras_publicador = dcc.Graph(
     figure=go.Figure(
@@ -49,7 +54,7 @@ def layout():
 
   fuentes_yaxis = []
   for x in fuentes:
-    fuentes_yaxis.append('<br>'.join(textwrap.wrap(x['_id']['fuente'], width=100)))
+    fuentes_yaxis.append('<br>'.join(wrap(x['_id']['fuente'])))
 
   barras_fuentes = dcc.Graph(
     figure=go.Figure(
