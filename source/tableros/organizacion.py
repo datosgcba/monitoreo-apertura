@@ -48,7 +48,7 @@ def layout(pathname):
     rows=3,
     cols=1,
     specs=[[{}], [{}], [{}]],
-    shared_xaxes=True,
+    shared_xaxes=False,
     vertical_spacing=0.1,
     print_grid=False
   )
