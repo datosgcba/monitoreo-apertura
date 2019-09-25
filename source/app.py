@@ -19,6 +19,10 @@ def can_it_run():
     return True
 
 app = dash.Dash()
+
+app.css.config.serve_locally = True
+app.scripts.config.serve_locally = True
+
 template = open("template.html", "r")
 
 app.index_string = template.read()
