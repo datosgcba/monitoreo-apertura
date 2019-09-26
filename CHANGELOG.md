@@ -6,22 +6,20 @@ Todos los cambios del proyecto serán documentados en este archivo.
 
 > 25 Septiembre 2019
 
-- agrega dependencias web locales [`1f8878c`](https://github.com/datosgcba/monitoreo-apertura/commit/1f8878c4c6bdc6b21d625ecac92c9d0068c6f39a)
+- Corrección de seguridad: Servir dependencias externas en CDN al servidor de la aplicación [`1f8878c`](https://github.com/datosgcba/monitoreo-apertura/commit/1f8878c4c6bdc6b21d625ecac92c9d0068c6f39a)
 
 #### [1.2.0-RC4](https://github.com/datosgcba/monitoreo-apertura/compare/1.2.0-RC3...1.2.0-RC4)
 
 > 22 August 2019
 
-- fix empty textwrap & xaxis [`3f79670`](https://github.com/datosgcba/monitoreo-apertura/commit/3f7967030f1292e4163b9a4949b96b57a0a19629)
-- fix line chart axis [`d9ccc13`](https://github.com/datosgcba/monitoreo-apertura/commit/d9ccc13b9c6207617859aec39c6b07117d299647)
-- eliminar pdf [`9bd4d56`](https://github.com/datosgcba/monitoreo-apertura/commit/9bd4d563b6e86fa7079416e19af433996eee14ce)
+- Fix: Error de nombres vacíos de organizaciones [`3f79670`](https://github.com/datosgcba/monitoreo-apertura/commit/3f7967030f1292e4163b9a4949b96b57a0a19629)
+- Fix: Grafico de lineas no visible [`d9ccc13`](https://github.com/datosgcba/monitoreo-apertura/commit/d9ccc13b9c6207617859aec39c6b07117d299647)
 
 #### [1.2.0-RC3](https://github.com/datosgcba/monitoreo-apertura/compare/1.2.0-RC2...1.2.0-RC3)
 
 > 11 Julio 2019
 
-- agrega json file check & previene falta de source [`4885747`](https://github.com/datosgcba/monitoreo-apertura/commit/4885747002ecdf0b6e64bb1435269a71e7113ab9)
-- agrego guias funcionales [`45a30ca`](https://github.com/datosgcba/monitoreo-apertura/commit/45a30ca43ce93d6a52c61e812885ef76d62a1f43)
+- Fix: chequear si existe el archivo indicadores.json [`4885747`](https://github.com/datosgcba/monitoreo-apertura/commit/4885747002ecdf0b6e64bb1435269a71e7113ab9)
 
 #### [1.2.0-RC2](https://github.com/datosgcba/monitoreo-apertura/compare/1.2.0-RC1...1.2.0-RC2)
 
@@ -48,15 +46,15 @@ Todos los cambios del proyecto serán documentados en este archivo.
 - agrega test data [`d0a1a34`](https://github.com/datosgcba/monitoreo-apertura/commit/d0a1a34d5dd148ab5d4e06f595479f0a3c1cd062)
 - ordena views [`64506c7`](https://github.com/datosgcba/monitoreo-apertura/commit/64506c7aaf0e7d2cb376c4bf0d0f8a9660e79ec3)
 - ajusta detalles tableros [`72e2120`](https://github.com/datosgcba/monitoreo-apertura/commit/72e212011c16efc4811f0339ed271d461f21b7b1)
-- arregla data.json duplicados por dia y borra json antes de escribir [`5a84337`](https://github.com/datosgcba/monitoreo-apertura/commit/5a84337f369b53ae58941541e0fcfdb2fe077331)
+- Fix: arregla data.json duplicados por dia y borra json antes de escribir [`5a84337`](https://github.com/datosgcba/monitoreo-apertura/commit/5a84337f369b53ae58941541e0fcfdb2fe077331)
 - cambiar cache por archivo json [`dac921c`](https://github.com/datosgcba/monitoreo-apertura/commit/dac921c32bbec599ab39a5673c19ab83ed7122fe)
-- arregla template y dependencias [`88588ba`](https://github.com/datosgcba/monitoreo-apertura/commit/88588baa0ced66e47598267b5bf1574f89171a5c)
+- Fix: arregla template y dependencias [`88588ba`](https://github.com/datosgcba/monitoreo-apertura/commit/88588baa0ced66e47598267b5bf1574f89171a5c)
 - agrega indicadores porcategoria y organizacion del ultimo dia [`655168d`](https://github.com/datosgcba/monitoreo-apertura/commit/655168d1e3503a850cafbf853a279c6b6afcb338)
 - refactorea contar vistas ga [`f339b5f`](https://github.com/datosgcba/monitoreo-apertura/commit/f339b5f04e7806090860f5de2a530775dba87e1e)
-- arregla fuente [`df7ceeb`](https://github.com/datosgcba/monitoreo-apertura/commit/df7ceeba31ada6cfaed7b279e6723e02dac7a774)
+- Fix: arregla fuente [`df7ceeb`](https://github.com/datosgcba/monitoreo-apertura/commit/df7ceeba31ada6cfaed7b279e6723e02dac7a774)
 - actualiza parametros innecesarios [`c73d694`](https://github.com/datosgcba/monitoreo-apertura/commit/c73d694704e9bfe44ec1df343fdb12484b61217a)
 - actualiza changelog [`cb48378`](https://github.com/datosgcba/monitoreo-apertura/commit/cb48378a1fc3e7ffd2f0e973d1675f1a97473676)
-- arregla dependencias faltantes [`05dae18`](https://github.com/datosgcba/monitoreo-apertura/commit/05dae182169fb7fbb5afe0b30faeccd6522990a4)
+- Fix: arregla dependencias faltantes [`05dae18`](https://github.com/datosgcba/monitoreo-apertura/commit/05dae182169fb7fbb5afe0b30faeccd6522990a4)
 - sacar modo debug [`c8f9577`](https://github.com/datosgcba/monitoreo-apertura/commit/c8f9577306b4413184dd6aeb349b97cfcd565a1d)
 
 #### [1.0.0-RC4](https://github.com/datosgcba/monitoreo-apertura/compare/1.0.0-RC3...1.0.0-RC4)
@@ -73,8 +71,8 @@ Todos los cambios del proyecto serán documentados en este archivo.
 - redisenio del tablero [`a074fbb`](https://github.com/datosgcba/monitoreo-apertura/commit/a074fbbecb1f5669e9e2fe79b80fe1ffc4c4d10f)
 - update set hovermode closest [`af9e864`](https://github.com/datosgcba/monitoreo-apertura/commit/af9e8646325594803ffb5bb7de0aea266894b825)
 - actualiza dependencias [`4434e2a`](https://github.com/datosgcba/monitoreo-apertura/commit/4434e2a52bdfc779994b912108caded580efaf12)
-- fix labels [`ce71901`](https://github.com/datosgcba/monitoreo-apertura/commit/ce71901b2b9e3e7772dba9fbe101932129cab393)
-- fix missing dependency [`11bb2b8`](https://github.com/datosgcba/monitoreo-apertura/commit/11bb2b8644b3985935113a0b9593bbea683708fd)
+- Fix: fix labels [`ce71901`](https://github.com/datosgcba/monitoreo-apertura/commit/ce71901b2b9e3e7772dba9fbe101932129cab393)
+- Fix: fix missing dependency [`11bb2b8`](https://github.com/datosgcba/monitoreo-apertura/commit/11bb2b8644b3985935113a0b9593bbea683708fd)
 - actualiza changelog [`1c5b303`](https://github.com/datosgcba/monitoreo-apertura/commit/1c5b3035f7f7385131679caee77f648108d7dd8e)
 
 #### [1.0.0-RC2](https://github.com/datosgcba/monitoreo-apertura/compare/1.0.0-RC1...1.0.0-RC2)
@@ -83,7 +81,7 @@ Todos los cambios del proyecto serán documentados en este archivo.
 
 - agrega metricas de google analytics & config en yml [`68bd9ea`](https://github.com/datosgcba/monitoreo-apertura/commit/68bd9ea8235e3565806bd62863ba9f20edae0e8d)
 - actualiza tablero [`0d98cc3`](https://github.com/datosgcba/monitoreo-apertura/commit/0d98cc341b5e8c2fa3fa3a51c4e694682677d244)
-- arregla bugs [`eeac5d3`](https://github.com/datosgcba/monitoreo-apertura/commit/eeac5d35ef8126aa603c29e4c6f7cb5780d776bb)
+- Fix: arregla bugs [`eeac5d3`](https://github.com/datosgcba/monitoreo-apertura/commit/eeac5d35ef8126aa603c29e4c6f7cb5780d776bb)
 - cambia puerto a 8080 [`082e310`](https://github.com/datosgcba/monitoreo-apertura/commit/082e3100ec656175768fc197123dde7904652b12)
 
 #### 1.0.0-RC1
