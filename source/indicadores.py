@@ -17,7 +17,7 @@ def crearIndicadores(db):
       "vistas_totales": {"$sum": "$dataset.vistas.totales"},
       "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
     }},
-    {"$sort": {"_id.fecha": 1}}
+    {"$sort": {"_id.fecha": -1}}
   ]))
 
   indicadores['por_organizacion'] = list(db['data-json'].aggregate([
@@ -35,7 +35,7 @@ def crearIndicadores(db):
       "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
       "publicador": {"$addToSet": "$dataset.publisher.name"}
     }},
-    {"$sort": {"_id.fecha": 1}}
+    {"$sort": {"_id.fecha": -1}}
   ]))
 
   indicadores['por_organizacion_ultimo'] = list(db['data-json'].aggregate([
@@ -69,7 +69,7 @@ def crearIndicadores(db):
       "vistas_totales": {"$sum": "$dataset.vistas.totales"},
       "vistas_unicas": {"$sum": "$dataset.vistas.unicas"},
     }},
-    {"$sort": {"_id.fecha": 1}}
+    {"$sort": {"_id.fecha": -1}}
   ]))
 
   indicadores['por_categoria_ultimo'] = list(db['data-json'].aggregate([

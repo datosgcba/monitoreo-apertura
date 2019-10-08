@@ -1,4 +1,5 @@
 # coding=utf-8
+from _plotly_future_ import v4_subplots
 import os
 import dash
 import cron
