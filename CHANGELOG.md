@@ -2,6 +2,12 @@
 
 Todos los cambios del proyecto serán documentados en este archivo.
 
+#### [1.2.0-RC6](https://github.com/datosgcba/monitoreo-apertura/compare/1.2.0-RC5...1.2.0-RC6)
+
+> 8 Octubre 2019
+
+- Fix: Invertir dirección de linea de tiempo [`61a0820`](https://github.com/datosgcba/monitoreo-apertura/commit/61a0820910dd74a4b5265016ba4b3e3291ec1741)
+
 #### [1.2.0-RC5](https://github.com/datosgcba/monitoreo-apertura/compare/1.2.0-RC4...1.2.0-RC5)
 
 > 25 Septiembre 2019
